@@ -128,3 +128,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Whastapp-web.js
+.wwebjs_cache
+/server/session/
+*.tmp

@@ -1,7 +1,0 @@
-2025/01/09-15:33:53.005 59c0 Reusing MANIFEST C:\Users\Bename\Documents\GitHub\AGP\session\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2025/01/09-15:33:53.012 59c0 Recovering log #109
-2025/01/09-15:33:53.039 59c0 Reusing old log C:\Users\Bename\Documents\GitHub\AGP\session\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000109.log 
-2025/01/09-15:33:55.737 6954 Level-0 table #117: started
-2025/01/09-15:33:55.749 6954 Level-0 table #117: 199706 bytes OK
-2025/01/09-15:33:55.750 6954 Delete type=0 #109
-2025/01/09-15:33:55.751 6954 Manual compaction at level-0 from '\x00\x1d\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1e\x00\x00\x00' @ 0 : 0; will stop at (end)

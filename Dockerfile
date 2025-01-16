@@ -1,15 +1,21 @@
-FROM node:20
-
-RUN mkdir -p /usr/src/app
+FROM node:20-slim
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+# Copy the server's package.json to the current directory
+COPY server/package*.json ./
 
+# Install dependencies for the server
 RUN npm install
 
-COPY src ./
+# Copy the entire server directory
+COPY server . 
 
+# Set environment variables
+ENV NODE_ENV=production
+
+# Expose the port for the server
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Run the server
+CMD ["node", "index.js"] && cd client && npm start

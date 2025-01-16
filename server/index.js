@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 3000;
+require('dotenv').config();
+const port = process.env.EXPRESS_PORT || 3000;
 
 // Importar rutas
 const whatsappRoutes = require('./src/routes/wa');

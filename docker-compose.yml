@@ -1,9 +1,29 @@
 services:
-  web:
-    build: .
+  server:
+    build: ./server
     ports:
-      - "3000:3000" 
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGO_URI=mongodb://db:27017/mydatabase # Match the 'db' service name
+    depends_on:
+      - db # Ensures the database starts before the web service
+    restart: always # Restarts the container if it fails
+
+  client:
+    build: ./client
+    ports:
+      - "80:80"
+    depends_on:
+      - server # Ensures the client starts after the server service
+    restart: always
+
   db:
     image: mongo
+    container_name: mongodb # Optional: Name the container for clarity
+    ports:
+      - "27017:27017" # Expose the MongoDB port if needed externally
     volumes:
-      - ./data/db:/data/db
+      - ./data/db:/data/db # Persist MongoDB data locally
+    restart: always

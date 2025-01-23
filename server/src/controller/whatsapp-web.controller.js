@@ -14,6 +14,8 @@ function generarRespuesta(opciones) {
 const client = new Client({
     puppeteer: {
         headless: true,
+        executablePath: '/usr/bin/google-chrome-stable',
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
     authStrategy: new LocalAuth({
         dataPath: './session', // Path to store session data
@@ -41,7 +43,7 @@ client.on('message_create', message => {
         timestamp: message.timestamp,
     });
 
-    // Handle menu navigation logic here (consider using a separate function)
+    // Handle menu navigation logic here
     if (!message.isGroup) {
         const text = message.body.toLowerCase();
         let currentMenu = menu;
@@ -67,7 +69,7 @@ client.on('message_create', message => {
 
 client.initialize();
 
-// Function to send a WhatsApp message (consider moving this to a separate function)
+// Function to send a WhatsApp message
 async function sendMessage(numeroDestino, mensaje) {
     if (!numeroDestino || !mensaje) {
         throw new Error('Número de destino y mensaje son requeridos');

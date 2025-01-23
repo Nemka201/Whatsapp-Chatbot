@@ -1,6 +1,4 @@
 const User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
-const jwt = require('../services/token.service');
 
 // Error handling middleware
 const handleErrors = (err, res) => {
@@ -18,7 +16,7 @@ const createUser = async (req, res) => {
     }
 
     // Check for existing username or phone number (assuming uniqueness)
-    const existingUser = await User.findOne({ $or: [{ username: usuario }, { numeroTelefono }] });
+    const existingUser = await User.findOne({ $or: [{ usuario }, { numeroTelefono }] });
     if (existingUser) {
       return res.status(400).json({ error: 'Username or phone number already exists' });
     }
@@ -84,4 +82,13 @@ const getUserById = async (req, res) => {
   }
 };
 
-module.exports = { createUser, loginUser, getUserById };
+const userCount = async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+    res.json({ count });
+  } catch (err) {
+    handleErrors(err, res);
+  }
+};
+
+module.exports = { createUser, loginUser, getUserById, userCount };

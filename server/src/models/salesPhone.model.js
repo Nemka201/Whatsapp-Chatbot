@@ -10,6 +10,11 @@ const salesPhoneSchema = mongoose.Schema({
         type: String,
         required: true
       },
+    whatsappUrl: {
+      type: String,
+      require: true,
+      unique: true
+    }
 }, {
   timestamps: true,
 });

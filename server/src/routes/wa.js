@@ -3,12 +3,13 @@ const express = require('express');
 const router = express.Router();
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const getSalesPhone = require('../utilities/getSalesPhone');
 
 // Inicializar el cliente de WhatsApp
 const client = new Client({
     puppeteer: {
         headless: true,
-        executablePath: '/usr/bin/google-chrome-stable',
+        // executablePath: '/usr/bin/google-chrome-stable',
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
     authStrategy: new LocalAuth({
@@ -18,15 +19,6 @@ const client = new Client({
 // Almacenar la última actividad de cada usuario
 const lastActivity = new Map();
 
-function generarRespuesta(opciones) {
-    let respuesta = 'Selecciona una opción:\n';
-    let i = 1;
-    for (const opcion in opciones) {
-        respuesta += `${i}. ${opcion}\n`;
-        i++;
-    }
-    return respuesta;
-}
 client.on('message', async message => {
     const chat = await message.getChat();
     const userId = message.from; // Identificar al usuario por su número
@@ -43,7 +35,7 @@ client.on('message', async message => {
                     message.reply(
                         `*Bienvenido de nuevo al Chatbot* 🤖\n\n` +
                         `1️⃣ Opción 1: Información sobre nuestros servicios.\n` +
-                        `2️⃣ Opción 2: Contactar con soporte.\n` +
+                        `2️⃣ Opción 2: Contactar con un vendedor.\n` +
                         `3️⃣ Opción 3: Ver nuestras promociones.\n\n` +
                         `Por favor, responde con el número de la opción que deseas.`
                     );
@@ -60,7 +52,8 @@ client.on('message', async message => {
                     break;
 
                 case '2':
-                    message.reply('✅ Contacta con nuestro equipo de soporte enviando un correo a soporte@empresa.com.');
+                    let salesMan = getSalesman();
+                    message.reply(`✅ Contacta con nuestro vendedor ${salesMan.name}`);
                     break;
 
                 case '3':
@@ -130,5 +123,9 @@ router.post('/send', async (req, res) => {
 router.get('/messages', (req, res) => {
     res.json({ messages: receivedMessages });
 });
+
+async function getSalesman() {
+    return vendedor = await getSalesPhone.getNextNumber();
+}
 
 module.exports = router;

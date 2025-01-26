@@ -1,4 +1,4 @@
-const SalesPhoneService = require('./salesPhone.service');
+const SalesPhoneService = require('../services/salesPhone.service');
 
 // Get all sales phones
 const getAllSalesPhones = async (req, res) => {
@@ -14,8 +14,9 @@ const getAllSalesPhones = async (req, res) => {
 // Add a new sales phone
 const addSalesPhone = async (req, res) => {
   try {
-    const { number, name } = req.body;
-    const newSalesPhone = await SalesPhoneService.addSalesPhone(number, name);
+    console.log('Datos recibidos:', req.body); // Verifica los datos que llegan
+    const { phone, name, whatsappUrl } = req.body;
+    const newSalesPhone = await SalesPhoneService.addSalesPhone(phone, name, whatsappUrl);
     return res.json(newSalesPhone);
   } catch (err) {
     console.error(err);
@@ -51,11 +52,12 @@ const deleteSalesPhone = async (req, res) => {
 // Update a sales phone by ID
 const updateSalesPhone = async (req, res) => {
   try {
-    const { number, name } = req.body;
+    const { phone, name, whatsappUrl } = req.body;
     const updatedSalesPhone = await SalesPhoneService.updateSalesPhone(
       req.params.id,
-      number,
-      name
+      phone,
+      name,
+      whatsappUrl
     );
     if (!updatedSalesPhone) {
       return res.status(404).json({ message: 'Sales phone not found' });

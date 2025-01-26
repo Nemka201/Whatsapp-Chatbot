@@ -1,88 +1,38 @@
-const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
+const whatsappWebService = require('../services/whatsapp-web.service');
 
-function generarRespuesta(opciones) {
-    let respuesta = 'Selecciona una opción:\n';
-    let i = 1;
-    for (const opcion in opciones) {
-        respuesta += `${i}. ${opcion}\n`;
-        i++;
-    }
-    return respuesta;
-}
+// Inicializar cliente de WhatsApp Web
+const initializeClient = (req, res) => {
+  try {
+    whatsappWebService.initializeClient();
+    res.status(200).json({ message: 'Cliente de WhatsApp Web inicializado correctamente' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al inicializar el cliente de WhatsApp Web' });
+  }
+};
 
-const client = new Client({
-    puppeteer: {
-        headless: true,
-        executablePath: '/usr/bin/google-chrome-stable',
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    },
-    authStrategy: new LocalAuth({
-        dataPath: './session', // Path to store session data
-    }),
-});
+// Enviar mensaje a un número de WhatsApp
+const sendMessage = async (req, res) => {
+  const { numeroDestino, mensaje } = req.body;
 
-client.on('qr', qr => {
-    qrcode.generate(qr, { small: true });
-});
+  try {
+    const response = await whatsappWebService.sendMessage(numeroDestino, mensaje);
+    res.status(200).json({ message: 'Mensaje enviado exitosamente', response });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al enviar el mensaje' });
+  }
+};
 
-client.on('ready', () => {
-    console.log('Client is ready!');
-});
+// Obtener mensajes recibidos
+const getReceivedMessages = (req, res) => {
+  try {
+    const messages = whatsappWebService.getReceivedMessages();
+    res.status(200).json({ messages });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener los mensajes recibidos' });
+  }
+};
 
-const receivedMessages = []; // Array to store received messages
-
-client.on('message_create', message => {
-    console.log('Mensaje recibido:', message.body);
-
-    // Save incoming messages
-    receivedMessages.push({
-        id: message.id._serialized,
-        from: message.from,
-        body: message.body,
-        timestamp: message.timestamp,
-    });
-
-    // Handle menu navigation logic here
-    if (!message.isGroup) {
-        const text = message.body.toLowerCase();
-        let currentMenu = menu;
-        const partes = text.split(' ');
-
-        partes.forEach(parte => {
-            currentMenu = currentMenu[parte];
-            if (!currentMenu) {
-                message.reply('Opción no válida.');
-                return;
-            }
-        });
-
-        if (typeof currentMenu === 'object') {
-            message.reply(generarRespuesta(currentMenu));
-        } else {
-            message.reply(`Has seleccionado: ${currentMenu}`);
-        }
-    } else {
-        console.log('Mensaje de grupo ignorado');
-    }
-});
-
-client.initialize();
-
-// Function to send a WhatsApp message
-async function sendMessage(numeroDestino, mensaje) {
-    if (!numeroDestino || !mensaje) {
-        throw new Error('Número de destino y mensaje son requeridos');
-    }
-
-    try {
-        const chatId = `${numeroDestino}@c.us`;
-        const response = await client.sendMessage(chatId, mensaje);
-        return response;
-    } catch (error) {
-        console.error('Error al enviar mensaje:', error);
-        throw error; // Re-throw the error for proper handling in the route
-    }
-}
-
-module.exports = { client, sendMessage, receivedMessages };
+module.exports = { initializeClient, sendMessage, getReceivedMessages };

@@ -20,9 +20,9 @@ class SalesPhoneService {
         }
     }
 
-    static async addSalesPhone(number, name) {
+    static async addSalesPhone(phone, name, whatsappUrl) {
         try {
-            const newSalesPhone = new salesPhone({ number, name });
+            const newSalesPhone = new salesPhone({ phone, name, whatsappUrl });
             await newSalesPhone.save();
             return newSalesPhone;
         } catch (err) {

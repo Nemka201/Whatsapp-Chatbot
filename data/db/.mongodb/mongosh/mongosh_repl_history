@@ -1,0 +1,5 @@
+show dbs
+db.mycollection.insertOne({"phone": 1234567890, "name": "John Doe", "whatsappUrl": "https://wa.me/1234567890"})
+use mychatbot
+show dbs
+mongo

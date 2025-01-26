@@ -1,56 +1,74 @@
-const MenuItem = require('../models/menuItem.model');
+const menuItemService = require('../services/menuItem.service');
 
-// Get all menu items
-const getAllMenuItems = (req, res) => {
-  MenuItem.find().sort({ command: 1 })
-    .then(menuItems => res.json(menuItems))
-    .catch(err => res.status(400).json('Error: ' + err));
-};669
-
-// Add a new menu item
-const addMenuItem = (req, res) => {
-  const command = Number(req.body.command);
-  const commandType = req.body.commandType;
-  const messageText = req.body.messageText;
-
-  const newMenuItem = new MenuItem({
-    command,
-    commandType,
-    messageText,
-  });
-
-  newMenuItem.save()
-    .then(() => res.json('Menu Item added!'))
-    .catch(err => res.status(400).json('Error: ' + err));
+// Obtener todos los items del menú
+const getAllMenuItems = async (req, res) => {
+  try {
+    const menuItems = await menuItemService.getAllMenuItems();
+    return res.json(menuItems);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json(`Error: ${err.message}`);
+  }
 };
 
-// Get a specific menu item by ID
-const getMenuItemById = (req, res) => {
-  MenuItem.findById(req.params.id)
-    .then(menuItem => res.json(menuItem))
-    .catch(err => res.status(400).json('Error: ' + err));
+// Añadir un nuevo item al menú
+const addMenuItem = async (req, res) => {
+  try {
+    const { command, commandType, messageText } = req.body;
+
+    // Validar los datos
+    if (!command || !commandType || !messageText) {
+      return res.status(400).json('Command, commandType, and messageText are required');
+    }
+
+    const newMenuItem = await menuItemService.addMenuItem(command, commandType, messageText);
+    return res.json({ message: 'Menu Item added!', menuItem: newMenuItem });
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json(`Error: ${err.message}`);
+  }
 };
 
-// Delete a menu item by ID
-const deleteMenuItem = (req, res) => {
-  MenuItem.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Menu Item deleted.'))
-    .catch(err => res.status(400).json('Error: ' + err));
+// Obtener un item del menú por ID
+const getMenuItemById = async (req, res) => {
+  try {
+    const menuItem = await menuItemService.getMenuItemById(req.params.id);
+    if (!menuItem) {
+      return res.status(404).json('Menu Item not found');
+    }
+    return res.json(menuItem);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json(`Error: ${err.message}`);
+  }
 };
 
-// Update a menu item by ID
-const updateMenuItem = (req, res) => {
-  MenuItem.findById(req.params.id)
-    .then(menuItem => {
-      menuItem.command = Number(req.body.command);
-      menuItem.commandType = req.body.commandType;
-      menuItem.messageText = req.body.messageText;
+// Eliminar un item del menú por ID
+const deleteMenuItem = async (req, res) => {
+  try {
+    await menuItemService.deleteMenuItem(req.params.id);
+    return res.json('Menu Item deleted.');
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json(`Error: ${err.message}`);
+  }
+};
 
-      menuItem.save()
-        .then(() => res.json('Menu updated!'))
-        .catch(err => res.status(400).json('Error: ' + err));
-    })
-    .catch(err => res.status(400).json('Error: ' + err));
+// Actualizar un item del menú por ID
+const updateMenuItem = async (req, res) => {
+  try {
+    const { command, commandType, messageText } = req.body;
+    const updatedMenuItem = await menuItemService.updateMenuItem(req.params.id, command, commandType, messageText);
+
+    if (!updatedMenuItem) {
+      return res.status(404).json('Menu Item not found');
+    }
+
+    return res.json({ message: 'Menu Item updated!', menuItem: updatedMenuItem });
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json(`Error: ${err.message}`);
+  }
 };
 
 module.exports = {

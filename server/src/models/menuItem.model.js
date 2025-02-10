@@ -1,24 +1,30 @@
 const mongoose = require('mongoose');
 
-const menuItemSchema = mongoose.Schema({
-  command: { 
-    type: Number, 
+const options = {
+  timestamps: true,
+};
+
+const menuItemSchema = new mongoose.Schema({
+  command: {
+    type: Number,
     required: true,
     unique: true
   },
   commandType: {
     type: String,
-    enum: ['Text message'],
+    enum: ['Text message', 'Menu'],
     default: 'Text message'
   },
-  messageText: { 
-    type: String, 
-    required: true 
-  },
-}, {
-  timestamps: true,
-});
+  images: [{
+    imagePath: { type: String, required: true }, // Ruta o ID de la imagen
+    description: String // Descripción opcional de la imagen
+  }],
+  messageText: String,
+  subMenuItems: [
+    { type: mongoose.Schema.Types.ObjectId, ref: 'MenuItem' } // Referencia al modelo MenuItem
+  ]
+}, options);
 
-const menuItem = mongoose.model('MenuItem', menuItemSchema);
+const MenuItem = mongoose.model('MenuItem', menuItemSchema);
 
-module.exports = menuItem;
+module.exports = MenuItem;

@@ -1,15 +1,26 @@
 const whitePhone = require('../models/whitePhone.model');
 
 class WhitePhoneService {
-  // Obtener todos los teléfonos blancos
+  // Obtener todos los registors blancos
   async getAllWhitePhones() {
     try {
       return await whitePhone.find().sort({ command: 1 });
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       throw new Error('Error getting white phones');
     }
   }
+  // Obtener numeros de telefonos unicamente
+  async getAllPhoneNumbers() {
+  try {
+    const whitePhones = await whitePhone.find();
+    const phoneNumbers = whitePhones.map(phone => phone.phone);
+    return phoneNumbers;
+  } catch (error) {
+    console.error('Error al obtener los números de teléfono:', error);
+    throw error;
+  }
+}
 
   // Añadir un nuevo teléfono blanco
   async addWhitePhone(number, name) {
@@ -44,19 +55,27 @@ class WhitePhoneService {
   }
 
   // Actualizar un teléfono blanco por ID
-  async updateWhitePhone(id, number, name) {
+  async updateWhitePhone(id, ...fieldsToUpdate) {
     try {
       const whitePhoneObj = await whitePhone.findById(id);
-      if (!whitePhoneObj) throw new Error('White phone not found');
-
-      whitePhoneObj.number = Number(number);
-      whitePhoneObj.name = name;
-
+      if (!whitePhoneObj) {
+        throw new Error('White phone not found');
+      }
+      const updateData = {};
+      fieldsToUpdate.forEach(([key, value]) => {
+        if (value !== undefined) {
+          updateData[key] = value;
+        }
+      });
+      if (Object.keys(updateData).length > 0) {
+        await whitePhoneObj.updateOne(updateData);
+      }
+  
       await whitePhoneObj.save();
       return whitePhoneObj;
     } catch (err) {
       console.error(err);
-      throw new Error('Error updating white phone');
+      throw err;
     }
   }
 }

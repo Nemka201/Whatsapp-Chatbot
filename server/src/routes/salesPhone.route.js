@@ -10,18 +10,18 @@ const {
 } = require('../controller/salesPhone.controller');
 
 // Get all sales Phones
-router.get('/sales-phones', getAllSalesPhones);
+router.get('', getAllSalesPhones);
 
 // Add a new sales Phone
-router.post('/sales-phones', addSalesPhone);
+router.post('', addSalesPhone);
 
 // Get a specific sales Phone by ID
-router.get('/sales-phones/:id', getSalesPhoneById);
+router.get('/:id', getSalesPhoneById);
 
 // Delete a sales Phone by ID
-router.delete('/sales-phones/:id', deleteSalesPhone);
+router.delete('/:id', deleteSalesPhone);
 
 // Update a sales Phone by ID
-router.put('/sales-phones/:id', updateSalesPhone);
+router.put('/:id', updateSalesPhone);
 
 module.exports = router;

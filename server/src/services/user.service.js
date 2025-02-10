@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user.model');
-const jwt = require('../utils/jwt'); // Suponiendo que tienes un archivo para manejar JWT
+const jwt = require('./jwt.service');
 
 class UserService {
   // Crear un nuevo usuario

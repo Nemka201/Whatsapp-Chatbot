@@ -1,57 +1,57 @@
-const api = require('./InterceptorService'); 
+import api from './InterceptorService';
 
-// Get all menu items
-const getAllMenuItems = async () => {
+const apiPath ='/menu-items/';
+
+const MenuItemService = {
+
+  getAllMenuItems: async () => {
     try {
-      const response = await api.get('/menuItems');
+      const response = await api.get(apiPath);
       return response.data;
     } catch (error) {
-      console.error('Error getting all menu items:', error);
-      throw error;
+      console.error('Error fetching all menu items:', error); 
+      throw new Error('Failed to fetch menu items.'); 
     }
-  };
-  
-  // Add a new menu item
-  const addMenuItem = async (command, commandType, messageText) => {
+  },
+
+  addMenuItem: async (menuItemData) => { 
     try {
-      const response = await api.post('/menuItems', { command, commandType, messageText });
+      const response = await api.post(apiPath, menuItemData);
       return response.data;
     } catch (error) {
       console.error('Error adding menu item:', error);
-      throw error;
+      throw new Error('Failed to add menu item.');
     }
-  };
-    
-  // Get a specific menu item by ID
-  const getMenuItemById = async (id) => {
+  },
+
+  getMenuItemById: async (id) => {
     try {
-      const response = await api.get(`/menuItems/${id}`);
+    const response = await api.get(`${apiPath}${id}`);
       return response.data;
     } catch (error) {
-      console.error('Error getting menu item by ID:', error);
-      throw error;
+      console.error('Error fetching menu item by ID:', error);
+      throw new Error('Failed to fetch menu item by ID.');
     }
-  };
-  
-  // Delete a menu item by ID
-  const deleteMenuItem = async (id) => {
+  },
+
+  deleteMenuItem: async (id) => {
     try {
-      await api.delete(`/menuItems/${id}`);
+      await api.delete(`${apiPath}${id}`);
     } catch (error) {
       console.error('Error deleting menu item:', error);
-      throw error;
+      throw new Error('Failed to delete menu item.');
     }
-  };
-  
-  // Update a menu item by ID
-  const updateMenuItem = async (id, command, commandType, messageText) => {
+  },
+
+  updateMenuItem: async (id, menuItemData) => {
     try {
-      const response = await api.put(`/menuItems/${id}`, { command, commandType, messageText });
+      const response = await api.put(`${apiPath}${id}`, menuItemData);
       return response.data;
     } catch (error) {
       console.error('Error updating menu item:', error);
-      throw error;
+      throw new Error('Failed to update menu item.');
     }
-  };
-  
-  export { getAllMenuItems, addMenuItem, getMenuItemById, deleteMenuItem, updateMenuItem };
+  },
+};
+
+export { MenuItemService };

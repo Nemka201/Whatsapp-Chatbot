@@ -57,17 +57,16 @@ const deleteWhitePhone = async (req, res) => {
 // Actualizar un teléfono blanco por ID
 const updateWhitePhone = async (req, res) => {
   try {
-    const { number, name } = req.body;
-    const updatedWhitePhone = await whitePhoneService.updateWhitePhone(req.params.id, number, name);
-
+    const { phone, name } = req.body;
+    const fieldsToUpdate = Object.entries({ name, phone });
+    const updatedWhitePhone = await WhitePhoneService.updateWhitePhone(req.params.id, ...fieldsToUpdate);
     if (!updatedWhitePhone) {
-      return res.status(404).json('White phone not found');
+      return res.status(404).json({ message: 'White phone not found' });
     }
-
-    return res.json({ message: 'White phone updated!', whitePhone: updatedWhitePhone });
+    return res.json(updatedWhitePhone);
   } catch (err) {
     console.error(err);
-    return res.status(400).json(`Error: ${err.message}`);
+    return res.status(400).json({ message: 'Error updating White phone' });
   }
 };
 

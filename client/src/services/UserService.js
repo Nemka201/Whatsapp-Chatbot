@@ -1,4 +1,4 @@
-const api = require('./InterceptorService');
+import api from './InterceptorService';
 
 const handleError = (error) => {
   console.error('Error in user service:', error);
@@ -6,14 +6,9 @@ const handleError = (error) => {
 
 // User service functions
 const UserService = {
-  createUser: async (nombreCompleto, numeroTelefono, usuario, contrasena) => {
+  createUser: async (userData) => {
     try {
-      const response = await api.post('/users', {
-        nombreCompleto,
-        numeroTelefono,
-        usuario,
-        contrasena,
-      });
+      const response = await api.post('/users/register', userData);
       return response.data;
     } catch (error) {
       handleError(error);
@@ -42,7 +37,8 @@ const UserService = {
   },
   userCount: async () => {
     try {
-        const response = await api.get(`/users/count`)
+        const response = await api.get(`/users/count`);
+        return response.data.count;
     } catch (error) {
         handleError(error);
         throw error;

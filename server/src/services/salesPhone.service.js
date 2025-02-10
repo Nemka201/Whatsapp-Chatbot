@@ -50,23 +50,30 @@ class SalesPhoneService {
         }
     }
 
-    static async updateSalesPhone(id, number, name) {
+    static async updateSalesPhone(id, ...fieldsToUpdate) {
         try {
-            const salesPhoneObj = await salesPhone.findById(id);
-            if (!salesPhoneObj) {
-                throw new Error('Sales phone not found');
+          const salesPhoneObj = await salesPhone.findById(id);
+          if (!salesPhoneObj) {
+            throw new Error('Sales phone not found');
+          }
+      
+          const updateData = {};
+          fieldsToUpdate.forEach(([key, value]) => {
+            if (value !== undefined) {
+              updateData[key] = value;
             }
-
-            salesPhoneObj.number = number;
-            salesPhoneObj.name = name;
-
-            await salesPhoneObj.save();
-            return salesPhoneObj;
+          });
+      
+          if (Object.keys(updateData).length > 0) {
+            await salesPhoneObj.updateOne(updateData);
+          }
+      
+          return salesPhoneObj;
         } catch (err) {
-            console.error(err);
-            throw err;
+          console.error(err);
+          throw err;
         }
-    }
+      }
 }
 
 module.exports = SalesPhoneService;

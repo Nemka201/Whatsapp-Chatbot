@@ -1,57 +1,54 @@
-const api = require('./InterceptorService'); 
+import api from './InterceptorService';
 
-// Get all white phones
-const getAllSalesPhones = async () => {
+const SalesPhoneService = {
+  getAllSalesPhones: async () => {
     try {
-      const response = await api.get('/sales-phones'); 
+      const response = await api.get('salesman');
       return response.data;
     } catch (error) {
       console.error('Error getting all sales phones:', error);
       throw error;
     }
-  };
-  
-  // Add a new white phone
-  const addSalesPhone = async (number, name) => {
+  },
+
+  addSalesPhone: async (number, name) => {
     try {
-      const response = await api.post('/sales-phones', { number, name });
+      const response = await api.post('salesman', { number, name });
       return response.data;
     } catch (error) {
       console.error('Error adding sales phone:', error);
       throw error;
     }
-  };
-  
-  // Get a specific white phone by ID
-  const getSalesPhoneById = async (id) => {
+  },
+
+  getSalesPhoneById: async (id) => {
     try {
-      const response = await api.get(`/sales-phones/${id}`);
+      const response = await api.get(`salesman/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error getting sales phone by ID:', error);
       throw error;
     }
-  };
-  
-  // Delete a white phone by ID
-  const deleteSalesPhone = async (id) => {
+  },
+
+  deleteSalesPhone: async (id) => {
     try {
-      await api.delete(`/sales-phones/${id}`);
+      await api.delete(`salesman/${id}`);
     } catch (error) {
       console.error('Error deleting sales phone:', error);
       throw error;
     }
-  };
-  
-  // Update a white phone by ID
-  const updateSalesPhone = async (id, number, name) => {
+  },
+
+  updateSalesPhone: async (id, phone, name) => {
     try {
-      const response = await api.put(`/sales-phones/${id}`, { number, name });
+      const response = await api.put(`salesman/${id}`, { phone, name });
       return response.data;
     } catch (error) {
       console.error('Error updating sales phone:', error);
       throw error;
     }
-  };
-  
-  export { getAllSalesPhones, addSalesPhone, getSalesPhoneById, deleteSalesPhone, updateSalesPhone };
+  },
+};
+
+export { SalesPhoneService };

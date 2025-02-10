@@ -3,13 +3,14 @@ const express = require('express');
 const router = express.Router();
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const getSalesPhone = require('../utilities/getSalesPhone');
+const getSalesPhone = require('../utilities/getSalesman');
+const whitePhoneService = require('../services/whitePhone.service');
 
 // Inicializar el cliente de WhatsApp
 const client = new Client({
     puppeteer: {
         headless: true,
-        // executablePath: '/usr/bin/google-chrome-stable',
+        executablePath: '/usr/bin/google-chrome-stable',
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
     authStrategy: new LocalAuth({
@@ -24,7 +25,9 @@ client.on('message', async message => {
     const userId = message.from; // Identificar al usuario por su número
     const now = Date.now(); // Timestamp actual en milisegundos
     if (!message.isGroup) {
-        if (message.from == '5493814644133@c.us') {
+        const allowedPhones = await whitePhoneService.getAllPhoneNumbers();
+        const userNumber = message.from.split('@')[0];
+        if (!allowedPhones.includes(userNumber)) {
             // Verificar si hay una última actividad registrada
             if (lastActivity.has(userId)) {
                 const lastTimestamp = lastActivity.get(userId); // Última actividad registrada
@@ -48,20 +51,42 @@ client.on('message', async message => {
             // Respuesta a opciones
             switch (message.body) {
                 case '1':
-                    message.reply('✅ Aquí tienes información sobre nuestros servicios:\n- Servicio A\n- Servicio B\n...');
+                    // Enviar información sobre los servicios
+                    await message.client.sendMessage(
+                        message.from, // El ID del chat del usuario
+                        '✅ Aquí tienes información sobre nuestros servicios:\n- Servicio A\n- Servicio B\n...'
+                    );
                     break;
 
                 case '2':
-                    let salesMan = getSalesman();
-                    message.reply(`✅ Contacta con nuestro vendedor ${salesMan.name}`);
+                    // Obtener el siguiente vendedor
+                    let salesMan = await getSalesPhone.getNextSalesman();
+
+                    // Enviar mensaje con información del vendedor
+                    await message.client.sendMessage(
+                        message.from,
+                        `Nuestro agente ${salesMan.name}\nSu número es: ${salesMan.phone}`
+                    );
+
+                    // Enviar mensaje con el enlace de WhatsApp
+                    await message.client.sendMessage(
+                        message.from,
+                        salesMan.whatsappUrl
+                    );
                     break;
 
                 case '3':
-                    message.reply('✅ Estas son nuestras promociones actuales:\n- Promoción 1\n- Promoción 2\n...');
+                    // Enviar promociones
+                    await message.client.sendMessage(
+                        message.from,
+                        '✅ Estas son nuestras promociones actuales:\n- Promoción 1\n- Promoción 2\n...'
+                    );
                     break;
 
                 default:
-                    message.reply(
+                    // Mensaje de opciones
+                    await message.client.sendMessage(
+                        message.from,
                         `*Bienvenidos a LUZARA* 🤖\n\n` +
                         `1️⃣ Opción 1: Información sobre nuestros servicios.\n` +
                         `2️⃣ Opción 2: Contactar con vendedores.\n` +
@@ -70,6 +95,7 @@ client.on('message', async message => {
                     );
                     break;
             }
+
 
         }
     } else {
@@ -124,8 +150,5 @@ router.get('/messages', (req, res) => {
     res.json({ messages: receivedMessages });
 });
 
-async function getSalesman() {
-    return vendedor = await getSalesPhone.getNextNumber();
-}
 
 module.exports = router;

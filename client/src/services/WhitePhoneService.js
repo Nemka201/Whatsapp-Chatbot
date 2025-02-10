@@ -1,57 +1,54 @@
-const api = require('./InterceptorService');
+import api from './InterceptorService';
 
-// Get all white phones
-const getAllSalesPhones = async () => {
+const WhitePhoneService = {
+  getAllWhitePhones: async () => {
     try {
-      const response = await api.get('/sales-phones');
+      const response = await api.get('/white-phones');
       return response.data;
     } catch (error) {
-      console.error('Error getting all sales phones:', error);
+      console.error('Error getting all white phones:', error);
       throw error;
     }
-  };
-  
-  // Add a new white phone
-  const addSalesPhone = async (number, name) => {
+  },
+
+  addWhitePhone: async (data) => {
     try {
-      const response = await api.post('/sales-phones', { number, name });
+      const response = await api.post('/white-phones', { phone: data.number, name: data.name });
       return response.data;
     } catch (error) {
-      console.error('Error adding sales phone:', error);
+      console.error('Error adding white phone:', error);
       throw error;
     }
-  };
-  
-  // Get a specific white phone by ID
-  const getSalesPhoneById = async (id) => {
+  },
+
+  getWhitePhoneById: async (id) => {
     try {
-      const response = await api.get(`/sales-phones/${id}`);
+      const response = await api.get(`/white-phones/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Error getting sales phone by ID:', error);
+      console.error('Error getting white phone by ID:', error);
       throw error;
     }
-  };
-  
-  // Delete a white phone by ID
-  const deleteSalesPhone = async (id) => {
+  },
+
+  deleteWhitePhone: async (id) => {
     try {
-      await api.delete(`/sales-phones/${id}`);
+      await api.delete(`/white-phones/${id}`);
     } catch (error) {
-      console.error('Error deleting sales phone:', error);
+      console.error('Error deleting white phone:', error);
       throw error;
     }
-  };
-  
-  // Update a white phone by ID
-  const updateSalesPhone = async (id, number, name) => {
+  },
+
+  updateWhitePhone: async (id, number, name) => {
     try {
-      const response = await api.put(`/sales-phones/${id}`, { number, name });
+      const response = await api.put(`/white-phones/${id}`, { number, name });
       return response.data;
     } catch (error) {
-      console.error('Error updating sales phone:', error);
+      console.error('Error updating white phone:', error);
       throw error;
     }
-  };
-  
-  export { getAllSalesPhones, addSalesPhone, getSalesPhoneById, deleteSalesPhone, updateSalesPhone };
+  },
+};
+
+export { WhitePhoneService };

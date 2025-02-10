@@ -20,7 +20,7 @@ const addSalesPhone = async (req, res) => {
     return res.json(newSalesPhone);
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ message: 'Error adding sales phone' }); 
+    return res.status(400).json({ message: 'Error adding sales phone' });
   }
 };
 
@@ -53,12 +53,8 @@ const deleteSalesPhone = async (req, res) => {
 const updateSalesPhone = async (req, res) => {
   try {
     const { phone, name, whatsappUrl } = req.body;
-    const updatedSalesPhone = await SalesPhoneService.updateSalesPhone(
-      req.params.id,
-      phone,
-      name,
-      whatsappUrl
-    );
+    const fieldsToUpdate = Object.entries({ name, whatsappUrl, phone });
+    const updatedSalesPhone = await SalesPhoneService.updateSalesPhone(req.params.id, ...fieldsToUpdate);
     if (!updatedSalesPhone) {
       return res.status(404).json({ message: 'Sales phone not found' });
     }

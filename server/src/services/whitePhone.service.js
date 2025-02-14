@@ -23,9 +23,9 @@ class WhitePhoneService {
 }
 
   // Añadir un nuevo teléfono blanco
-  async addWhitePhone(number, name) {
+  async addWhitePhone(phone, name) {
     try {
-      const newWhitePhone = new whitePhone({ number, name });
+      const newWhitePhone = new whitePhone({ phone, name });
       await newWhitePhone.save();
       return newWhitePhone;
     } catch (err) {

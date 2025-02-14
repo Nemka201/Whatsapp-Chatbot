@@ -136,9 +136,9 @@ function MenuItemList() {
   };
 
   return (
-    <div className="md:w-full lg:w-1/2 p-4 overflow-x-auto   bg-white shadow-md">
-      <h2 className="text-center text-3xl text-blue-950 my-8">RESPUESTAS CHATBOT</h2>
-      <table className="table table-zebra">
+    <div className="md:w-full p-4 overflow-x-aut shadow-sm">
+      <h2 className="text-center text-3xl my-8">RESPUESTAS CHATBOT</h2>
+      <table className="table table-zebra sm:text-sm">
         <thead>
           <tr>
             <th>Comando</th>

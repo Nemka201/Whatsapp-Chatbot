@@ -1,5 +1,6 @@
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const qrcode64 = require('qrcode');
 
 class WhatsAppWebService {
   constructor() {
@@ -16,24 +17,34 @@ class WhatsAppWebService {
     this.isConnected = false;
     this.receivedMessages = [];
     this.initializeClient();
+    this.qrCode = null; 
+
   }
 
   // Initialize Client
   initializeClient() {
-    this.isConnected = true;
 
+    this.isConnected = true; // Set connected status
     this.client.on('qr', qr => {
-      qrcode.generate(qr, { small: true });
+      qrcode64.toDataURL(qr, { errorCorrectionLevel: 'H' }, (err, url) => {
+        if (err) throw err;
+        this.qrCode = url;
+      });
+      qrcode.generate(qr, { small: true }); 
     });
-
+    
     this.client.on('ready', () => {
       console.log('Cliente de WhatsApp listo!');
     });
-
+    this.client.on('disconnected', () => {
+      this.isConnected = false;
+      this.qrCode = null; // Clean QR
+      console.log('Cliente de WhatsApp desconectado');
+    });
     this.client.on('message_create', message => {
       console.log('Mensaje recibido:', message.body);
 
-      // Guardar los mensajes recibidos
+      // Save messages
       this.receivedMessages.push({
         id: message.id._serialized,
         from: message.from,
@@ -77,6 +88,11 @@ class WhatsAppWebService {
   // Verify client is active
   async isActive() {
     return this.isConnected;
+  }
+  
+  // Get QR code
+  async getQRCode() {
+    return this.qrCode; 
   }
 }
 

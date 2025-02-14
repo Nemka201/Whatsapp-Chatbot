@@ -67,7 +67,7 @@ function MenuItemForm() {
 
     return (
         <>
-            <button className="btn hover:bg-blue-300" onClick={handleModalOpen}>Agregar respuesta</button>
+            <button className="btn btn-primary btn-ghost" onClick={handleModalOpen}>Agregar respuesta</button>
             {isModalOpen && (
                 <dialog id="my_modal_4" className="modal" open>
                     <div className="modal-box w-1/2 max-w-5xl">

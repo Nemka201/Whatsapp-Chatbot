@@ -1,11 +1,13 @@
 import Responses from "./Responses";
 import Messages from "./Messages";
+import Status from "./Status";
 
 function WhatsApp(){
     return (
-        <div className="bg-blue-200">
+        <div className="lg:flex">
             <Responses/>
-            <Messages/>
+            <Status/>
+            {/* <Messages/> */}
         </div>
     )
 }

@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { WhitePhoneService } from '../../services/WhitePhoneService';
+import { SalesPhoneService } from '../../services/SalesPhoneService';
 
 const schema = yup.object().shape({
-  phone: yup
+  number: yup
     .number()
     .required('El número de teléfono es requerido')
     .positive('El número de teléfono debe ser positivo'),
@@ -30,7 +30,7 @@ const WhitePhoneForm = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await WhitePhoneService.addWhitePhone(data);
+      const response = await SalesPhoneService.addSalesPhone(data);
       console.log('Teléfono agregado:', response); 
       // Limpiar el formulario después de un envío exitoso
       reset(); 
@@ -44,22 +44,22 @@ const WhitePhoneForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-5/6 mx-auto shadow-lg p-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-5/6 mx-auto shadow-xl p-12">
       <h2 className="text-center text-2xl">Agregar Nuevo</h2>
       <div className="my-4">
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="number" className="block text-sm font-medium text-gray-700">
           Teléfono:
         </label>
         <input
           type="number"
-          id="phone"
-          {...register('phone')}
+          id="number"
+          {...register('number')}
           className={`border border-gray-300 rounded-md p-2 w-full ${
-            errors.phone ? 'border-red-500' : ''
+            errors.number ? 'border-red-500' : ''
           }`}
         />
-        {errors.phone && (
-          <span className="text-red-500 text-sm">{errors.phone.message}</span>
+        {errors.number && (
+          <span className="text-red-500 text-sm">{errors.number.message}</span>
         )}
       </div>
 

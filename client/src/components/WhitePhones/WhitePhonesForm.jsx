@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { WhitePhoneService } from '../../services/WhitePhoneService';
 
 const schema = yup.object().shape({
-  phone: yup
+  number: yup
     .number()
     .required('El número de teléfono es requerido')
     .positive('El número de teléfono debe ser positivo'),
@@ -17,7 +17,7 @@ const WhitePhoneForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset, // Agregar reset para limpiar el formulario
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -26,7 +26,7 @@ const WhitePhoneForm = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const response = await WhitePhoneService.addWhitePhone(data.phone, data.name); 
+      const response = await WhitePhoneService.addWhitePhone(data); 
       console.log('Teléfono agregado:', response); 
       reset(); 
     } catch (error) {
@@ -37,22 +37,22 @@ const WhitePhoneForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-5/6 mx-auto shadow-lg p-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-5/6 mx-auto  shadow-xl p-12">
       <h2 className="text-center text-2xl">Agregar Nuevo</h2>
       <div className="my-4">
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="number" className="block text-sm font-medium text-gray-700">
           Teléfono:
         </label>
         <input
           type="number"
-          id="phone"
-          {...register('phone')}
+          id="number"
+          {...register('number')}
           className={`border border-gray-300 rounded-md p-2 w-full ${
-            errors.phone ? 'border-red-500' : ''
+            errors.number ? 'border-red-500' : ''
           }`}
         />
-        {errors.phone && (
-          <span className="text-red-500 text-sm">{errors.phone.message}</span>
+        {errors.number && (
+          <span className="text-red-500 text-sm">{errors.v.message}</span>
         )}
       </div>
 

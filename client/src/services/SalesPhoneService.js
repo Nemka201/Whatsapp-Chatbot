@@ -11,9 +11,9 @@ const SalesPhoneService = {
     }
   },
 
-  addSalesPhone: async (number, name) => {
+  addSalesPhone: async (data) => {    
     try {
-      const response = await api.post('salesman', { number, name });
+      const response = await api.post('salesman', data);
       return response.data;
     } catch (error) {
       console.error('Error adding sales phone:', error);

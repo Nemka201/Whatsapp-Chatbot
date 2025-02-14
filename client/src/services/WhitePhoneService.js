@@ -13,7 +13,7 @@ const WhitePhoneService = {
 
   addWhitePhone: async (data) => {
     try {
-      const response = await api.post('/white-phones', { phone: data.number, name: data.name });
+      const response = await api.post('/white-phones', data);
       return response.data;
     } catch (error) {
       console.error('Error adding white phone:', error);

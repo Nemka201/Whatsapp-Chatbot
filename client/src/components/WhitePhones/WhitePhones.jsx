@@ -55,7 +55,7 @@ function WhitePhone() {
 
   return (
     <div className="flex my-10 mb-4">
-      <div className="md:w-full lg:w-1/2 p-4 bg-white">
+      <div className="md:w-full lg:w-1/2">
         <WhitePhoneForm /> 
       </div>
 

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controller/user.controller.js');
+
+// HandleError
 const handleErrors = (err, res) => {
   console.error(err);
   res.status(500).json({ error: 'Internal server error' });

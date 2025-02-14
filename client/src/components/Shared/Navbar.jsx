@@ -5,7 +5,7 @@ function Navbar() {
   return (
     <div className="navbar bg-blue-950 text-white">
       <div className="flex-none">
-        <button className="btn btn-square btn-ghost">
+        {/* <button className="btn btn-square btn-ghost">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -19,7 +19,7 @@ function Navbar() {
               d="M4 6h16M4 12h16M4 18h16"
             ></path>
           </svg>
-        </button>
+        </button> */}
       </div>
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl">
@@ -31,7 +31,7 @@ function Navbar() {
           Vendedores
         </Link>
         <Link to="/White-phones" className="btn btn-ghost text-sm mx-0">
-          WhitePhones
+          Restringidos
         </Link>
         <Link to="/Whatsapp" className="btn btn-ghost text-sm mx-0">
           Chatbot

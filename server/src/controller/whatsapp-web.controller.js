@@ -57,5 +57,19 @@ const isActive = async (req, res) => {
   }
 };
 
+// Get Whatsapp QR code for inizialice
+const getQRCode = async (req, res) => {
+  try {
+    const qrCode = await whatsappWebService.getQRCode(); 
+    if (qrCode) {
+      res.status(200).json({ qrCode }); 
+    } else {
+      res.status(404).json({ message: 'No se ha generado ningún QR Code' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al obtener el QR Code' });
+  }
+};
 
-module.exports = { initializeClient, stopBot, sendMessage, getReceivedMessages, isActive };
+module.exports = { initializeClient, stopBot, sendMessage, getReceivedMessages, isActive, getQRCode };

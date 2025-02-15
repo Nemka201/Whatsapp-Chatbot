@@ -14,11 +14,16 @@ const schema = yup.object().shape({
     messageText: yup
         .string()
         .required('El mensaje es requerido'),
+    parentMenu: yup
+        .string()
+        .optional(), // Make parentMenu optional
 });
 
 function MenuItemForm() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [parentMenus, setParentMenus] = useState([]);
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [imageUrls, setImageUrls] = useState([]);
     const {
         register,
         handleSubmit,
@@ -51,6 +56,12 @@ function MenuItemForm() {
     const handleModalClose = () => {
         setIsModalOpen(false);
     };
+
+    const handleImageChange = (event) => {
+        const files = Array.from(event.target.files);
+        setSelectedImages([...selectedImages, ...files]);
+    };
+
     const onSubmit = async (data) => {
         setIsSubmitting(true);
         try {
@@ -97,8 +108,8 @@ function MenuItemForm() {
                                     {...register('commandType')}
                                     className={`border border-gray-300 rounded-md p-2 w-full ${errors.commandType ? 'border-red-500' : ''}`}
                                 >
-                                    <option value="Text message">Texto</option>
-                                    {/* Agregar más tipos de comando si es necesario */}
+                                    <option value="Menu">Menu</option>
+                                    <option value="Opcion">Opcion</option>
                                 </select>
                             </div>
 
@@ -115,7 +126,19 @@ function MenuItemForm() {
                                     <span className="text-red-500 text-sm">{errors.messageText.message}</span>
                                 )}
                             </div>
-
+                            <div className="mb-4">
+                                <label htmlFor="images" className="block text-sm font-medium text-gray-700">
+                                    Imágenes:
+                                </label>
+                                <input
+                                    type="file"
+                                    id="images"
+                                    name="images"
+                                    multiple
+                                    onChange={handleImageChange}
+                                    className="border border-gray-300 rounded-md p-2 w-full"
+                                />
+                            </div>
                             <div className="mb-4">
                                 <label htmlFor="parentMenu" className="block text-sm font-medium text-gray-700">
                                     Menú Padre:

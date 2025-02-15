@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function Navbar() {
   return (
-    <div className="navbar bg-blue-950 text-white">
+    <div className="navbar bg-blue-950 text-white ubuntu-medium-italic">
       <div className="flex-none">
         {/* <button className="btn btn-square btn-ghost">
           <svg
@@ -22,8 +22,8 @@ function Navbar() {
         </button> */}
       </div>
       <div className="flex-1">
-        <Link to="/" className="btn btn-ghost text-xl">
-          Luzara
+        <Link to="/" className="btn btn-ghost text-xl ubuntu-medium">
+          Whatsapp Chatbot
         </Link>
       </div>
       <div className="flex-2"> 

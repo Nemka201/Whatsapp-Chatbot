@@ -23,7 +23,7 @@ function WhitePhone() {
 
   const handleEdit = (WhitePhone) => {
     setEditingWhitePhone(WhitePhone);
-    setEditedWhitePhone({ ...WhitePhone }); // Crear una copia para edición
+    setEditedWhitePhone({ ...WhitePhone });
   };
 
   const handleSave = async () => {
@@ -60,8 +60,8 @@ function WhitePhone() {
       </div>
 
       <div className="md:w-full lg:w-1/2 p-4 overflow-x-auto mt-5 mb-11">
-        <table className="table table-zebra">
-          <thead>
+        <table className="table table-zebra ubuntu-light-italic">
+          <thead className="">
             <tr>
               <th>Nombre</th>
               <th>Número</th>

@@ -65,6 +65,46 @@ class MenuItemService {
       throw new Error('Error updating menu item');
     }
   }
+
+  // Obtener menu root
+  async getMenuString() {
+    try {
+      const rootMenuItems = await MenuItem.find({ parentMenu: null }).sort({ command: 1 }); 
+      let menuString = '*Menú Principal*\n\n';
+
+      for (const item of rootMenuItems) {
+        menuString += `${item.command}️⃣: ${item.messageText}\n`;
+      }
+
+      menuString += '\nPor favor, responde con el número de la opción que deseas.';
+
+      return menuString;
+    } catch (err) {
+      console.error(err);
+      throw new Error('Error generating menu string');
+    }
+  }
+
+  // Obtener opciones del menu
+  async getSubMenuOptions(parentId) {
+    try {
+      const subMenuItems = await MenuItem.find({ parentMenu: parentId }).sort({ command: 1 });
+      let menuString = '';
+  
+      if (subMenuItems.length === 0) {
+        return 'No hay subopciones para este menú.';
+      }
+  
+      for (const item of subMenuItems) {
+        menuString += `${item.command}️⃣: ${item.messageText}\n`;
+      }
+  
+      return menuString;
+    } catch (err) {
+      console.error(err);
+      throw new Error('Error getting sub menu options');
+    }
+  }
 }
 
 module.exports = new MenuItemService();

@@ -38,9 +38,9 @@ const WhitePhoneForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-5/6 mx-auto  shadow-xl p-12">
-      <h2 className="text-center text-2xl">Agregar Nuevo</h2>
+      <h2 className="text-center ubuntu-medium text-2xl">Agregar Nuevo</h2>
       <div className="my-4">
-        <label htmlFor="number" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="number" className="block text-md text-gray-700 ubuntu-light">
           Teléfono:
         </label>
         <input
@@ -57,7 +57,7 @@ const WhitePhoneForm = () => {
       </div>
 
       <div className="mb-4">
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="name" className="block text-md text-gray-700 ubuntu-light">
           Nombre:
         </label>
         <input
@@ -76,7 +76,7 @@ const WhitePhoneForm = () => {
       <button
         type="submit"
         disabled={isLoading}
-        className="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+        className="bg-blue-800 hover:bg-blue-900 ubuntu-bold text-white font-bold py-2 px-4 rounded"
       >
         Guardar
       </button>

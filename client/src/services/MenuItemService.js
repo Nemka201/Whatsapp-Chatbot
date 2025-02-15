@@ -1,4 +1,5 @@
 import api from './InterceptorService';
+import { uploadImageToCloudinary } from './CloudinaryService';
 
 const apiPath ='/menu-items/';
 
@@ -14,9 +15,30 @@ const MenuItemService = {
     }
   },
 
-  addMenuItem: async (menuItemData) => { 
+  addMenuItem: async (menuItemData) => {
     try {
-      const response = await api.post(apiPath, menuItemData);
+      const uploadedImageUrls = await Promise.all(
+        menuItemData.images.map(async (image) => {
+          try {
+            const imageUrl = await CloudinaryService.uploadImage(image);
+            return imageUrl;
+          } catch (error) {
+            console.error('Error al subir la imagen:', error);
+            return null; 
+          }
+        })
+      );
+
+      // Filtrar las URLs válidas
+      const validImageUrls = uploadedImageUrls.filter(url => url !== null);
+
+      // Actualizar menuItemData con las URLs válidas
+      const updatedMenuItemData = {
+        ...menuItemData,
+        images: validImageUrls.map(url => ({ imagePath: url }))
+      };
+
+      const response = await api.post(apiPath, updatedMenuItemData); 
       return response.data;
     } catch (error) {
       console.error('Error adding menu item:', error);
@@ -45,7 +67,43 @@ const MenuItemService = {
 
   updateMenuItem: async (id, menuItemData) => {
     try {
-      const response = await api.put(`${apiPath}${id}`, menuItemData);
+      // Eliminar imágenes anteriores si existen
+      const existingMenuItem = await MenuItemService.getMenuItemById(id); 
+      if (existingMenuItem && existingMenuItem.images) {
+        await Promise.all(
+          existingMenuItem.images.map(async (image) => {
+            try {
+              await CloudinaryService.deleteImage(image.imagePath); 
+            } catch (error) {
+              console.error('Error al eliminar la imagen:', error);
+            }
+          })
+        );
+      }
+
+      // Subir nuevas imágenes a Cloudinary
+      const uploadedImageUrls = await Promise.all(
+        menuItemData.images.map(async (image) => {
+          try {
+            const imageUrl = await CloudinaryService.uploadImage(image);
+            return imageUrl;
+          } catch (error) {
+            console.error('Error al subir la imagen:', error);
+            return null;
+          }
+        })
+      );
+
+      // Filtrar las URLs válidas
+      const validImageUrls = uploadedImageUrls.filter(url => url !== null);
+
+      // Actualizar menuItemData con las URLs válidas
+      const updatedMenuItemData = {
+        ...menuItemData,
+        images: validImageUrls.map(url => ({ imagePath: url }))
+      };
+
+      const response = await api.put(`${apiPath}${id}`, updatedMenuItemData);
       return response.data;
     } catch (error) {
       console.error('Error updating menu item:', error);

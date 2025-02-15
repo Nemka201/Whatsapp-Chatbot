@@ -5,8 +5,8 @@ import Status from "./Status";
 function WhatsApp(){
     return (
         <div className="lg:flex">
-            <Responses/>
             <Status/>
+            <Responses/>
             {/* <Messages/> */}
         </div>
     )

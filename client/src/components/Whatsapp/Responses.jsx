@@ -83,8 +83,8 @@ function MenuItemList() {
                 })
               }
             >
-              <option value="Text message">Texto</option>
-              {/* Agregar más tipos de comando si es necesario */}
+              <option value="Menu">Menu</option>
+              <option value="Opcion">Opcion</option>
             </select>
           ) : (
             item.commandType
@@ -136,9 +136,9 @@ function MenuItemList() {
   };
 
   return (
-    <div className="md:w-full p-4 overflow-x-aut shadow-sm">
-      <h2 className="text-center text-3xl my-8">RESPUESTAS CHATBOT</h2>
-      <table className="table table-zebra sm:text-sm">
+    <div className="md:w-full p-4 overflow-x-aut shadow-sm mt-2">
+      <h2 className="text-center ubuntu-medium text-3xl my-8">RESPUESTAS CHATBOT</h2>
+      <table className="table table-zebra ubuntu-light sm:text-sm">
         <thead>
           <tr>
             <th>Comando</th>
@@ -151,7 +151,7 @@ function MenuItemList() {
           {renderMenuItems(menuItems)}
         </tbody>
       </table>
-      <div className="flex flex-row-reverse mt-24">
+      <div className="flex flex-row-reverse mt-20">
         <MenuItemForm />
       </div>
     </div>

@@ -1,9 +1,15 @@
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const qrcode64 = require('qrcode');
+const fs = require('fs');
+const whitePhoneService = require('../services/whitePhone.service');
+const menuItemService = require('../services/menuItem.service');
+const { getNextSalesman } = require('../utilities/getSalesman');
 
 class WhatsAppWebService {
   constructor() {
+    const path = './app/whatsapp-session';
+
     this.client = new Client({
       puppeteer: {
         headless: true,
@@ -11,40 +17,59 @@ class WhatsAppWebService {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
       },
       authStrategy: new LocalAuth({
-        dataPath: './session', // Path to store session data
+        dataPath: path,
       }),
     });
+
+    this.lastActivity = new Map(); 
+    if (fs.existsSync('whatsapp-session')) {
+      console.log('✅ Carpeta de sesión encontrada');
+    } else {
+      console.error('❌ La carpeta de sesión no se está creando correctamente');
+      this.initializeClient();
+    }
     this.isConnected = false;
     this.receivedMessages = [];
-    this.initializeClient();
-    this.qrCode = null; 
-
   }
 
-  // Initialize Client
+  // Inicializar el cliente
   initializeClient() {
-
-    this.isConnected = true; // Set connected status
-    this.client.on('qr', qr => {
+    this.client.on('qr', (qr) => {
       qrcode64.toDataURL(qr, { errorCorrectionLevel: 'H' }, (err, url) => {
-        if (err) throw err;
+        if (err) {
+          console.error('Error generando QR:', err);
+          return;
+        }
         this.qrCode = url;
       });
-      qrcode.generate(qr, { small: true }); 
+      qrcode.generate(qr, { small: true });
     });
-    
-    this.client.on('ready', () => {
-      console.log('Cliente de WhatsApp listo!');
-    });
-    this.client.on('disconnected', () => {
-      this.isConnected = false;
-      this.qrCode = null; // Clean QR
-      console.log('Cliente de WhatsApp desconectado');
-    });
-    this.client.on('message_create', message => {
-      console.log('Mensaje recibido:', message.body);
 
-      // Save messages
+    this.client.on('ready', () => {
+      console.log('✅ Cliente de WhatsApp listo!');
+      this.isConnected = true;
+
+    });
+
+    this.client.on('disconnected', () => {
+      console.log('⚠️ Cliente de WhatsApp desconectado');
+      this.isConnected = false;
+      this.qrCode = null;
+    });
+
+    // Escuchar mensajes
+    this.client.on('message', async (message) => {
+      await this.handleIncomingMessage(message);
+    });
+
+    this.client.initialize();
+  }
+
+  // Manejar mensajes entrantes
+  async handleIncomingMessage(message) {
+    try {
+      console.log('📩 Mensaje recibido:', message.body);
+
       this.receivedMessages.push({
         id: message.id._serialized,
         from: message.from,
@@ -52,183 +77,166 @@ class WhatsAppWebService {
         timestamp: message.timestamp,
       });
 
-      client.on('message', async message => {
-        const chat = await message.getChat();
-        const userId = message.from;
-        const now = Date.now();
-        if (this.isConnected) {
-          if (!message.isGroup) {
-            const userNumber = message.from.split('@')[0];
-
-            if (await isUserAuthorized(userNumber)) {
-              if (await shouldSendMenu(userId, now)) {
-                await sendMenu(message);
-              }
-
-              handleUserResponse(message);
-            } else {
-              sendUnauthorizedMessage(message);
-            }
-          } else {
-            console.log('Mensaje de grupo ignorado');
-          }
-        }
+      if (message.isGroup) {
+        console.log('🔕 Mensaje de grupo ignorado');
+        return;
       }
-      );
-    });
 
-    this.client.initialize();
+      this.lastActivity.set(message.from, Date.now()); 
+      const userNumber = message.from.split('@')[0];
+      const canMessage = await  this.isUserAuthorized(userNumber);
+      if (canMessage) {
+        if (await this.shouldSendMenu(message.from)) {
+          await this.sendMenu(message);
+        }
+        await this.handleUserResponse(message);
+      } else {
+        await this.sendUnauthorizedMessage(message);
+      }
+    } catch (error) {
+      console.error('❌ Error procesando mensaje:', error);
+    }
   }
-  // Stop whatsapp-web client
+
+  // Detener el cliente de WhatsApp
   async stopBot() {
     this.isConnected = false;
-    console.log('Cliente de WhatsApp cerrado');
+    console.log('🚫 Cliente de WhatsApp detenido');
   }
 
-  // Verify client is active
+  // Verificar si el cliente está activo
   async isActive() {
     return this.isConnected;
   }
-  
-  // Get QR code
+
+  // Obtener código QR
   async getQRCode() {
-    return this.qrCode; 
-  }
-}
-
-// Functions //
-
-// Función para generar respuesta en base a las opciones del menú
-async function generarRespuesta(opciones) {
-  let respuesta = 'Selecciona una opción:\n';
-  let i = 1;
-  for (const opcion in opciones) {
-    respuesta += `${i}. ${opcion}\n`;
-    i++;
-  }
-  return respuesta;
-}
-
-// Send message function
-async function sendMessage(numeroDestino, mensaje) {
-  if (!numeroDestino || !mensaje) {
-    throw new Error('Número de destino y mensaje son requeridos');
+    return this.qrCode;
   }
 
-  try {
-    const chatId = `${numeroDestino}@c.us`;
-    const response = await this.client.sendMessage(chatId, mensaje);
-    return response;
-  } catch (error) {
-    console.error('Error al enviar mensaje:', error);
-    throw error;
-  }
-}
+  // Enviar mensaje
+  async sendMessage(numeroDestino, mensaje) {
+    if (!numeroDestino || !mensaje) {
+      throw new Error('Número de destino y mensaje son requeridos');
+    }
 
-// Return user messages
-async function getReceivedMessages() {
-  return this.receivedMessages;
-}
-
-// Verify white-list users
-async function isUserAuthorized(userNumber) {
-  const allowedPhones = await whitePhoneService.getAllPhoneNumbers();
-  return allowedPhones.includes(userNumber);
-}
-
-// Verify user activity
-async function shouldSendMenu(userId, now) {
-  if (!lastActivity.has(userId)) {
-    return true;
+    try {
+      const chatId = `${numeroDestino}@c.us`;
+      return await this.client.sendMessage(chatId, mensaje);
+    } catch (error) {
+      console.error('❌ Error al enviar mensaje:', error);
+      throw error;
+    }
   }
 
-  const lastTimestamp = lastActivity.get(userId);
-  const timeElapsed = now - lastTimestamp;
-  return timeElapsed > 300000;
-}
-// Send user menu
-async function sendMenu(message) {
-  await message.client.sendMessage(
-    message.from, // El ID del chat del usuario
-    `*Bienvenido de nuevo al Chatbot* 🤖\n\n` +
-    `1️⃣ Opción 1: Información sobre nuestros servicios.\n` +
-    `2️⃣ Opción 2: Contactar con un vendedor.\n` +
-    `3️⃣ Opción 3: Ver nuestras promociones.\n\n` +
-    `Por favor, responde con el número de la opción que deseas.`);
-}
-
-// Handle response
-async function handleUserResponse(message) {
-  switch (message.body) {
-    case '1':
-      // Enviar información sobre los servicios
-      await message.client.sendMessage(
-        message.from, // El ID del chat del usuario
-        '✅ Aquí tienes información sobre nuestros servicios:\n- Servicio A\n- Servicio B\n...'
-      );
-      break;
-
-    case '2':
-      // Obtener el siguiente vendedor
-      let salesMan = await getSalesPhone.getNextSalesman();
-
-      // Enviar mensaje con información del vendedor
-      await message.client.sendMessage(
-        message.from,
-        `Nuestro agente ${salesMan.name}\nSu número es: ${salesMan.phone}`
-      );
-
-      // Enviar mensaje con el enlace de WhatsApp
-      await message.client.sendMessage(
-        message.from,
-        salesMan.whatsappUrl
-      );
-      break;
-
-    case '3':
-      // Enviar promociones
-      await message.client.sendMessage(
-        message.from,
-        '✅ Estas son nuestras promociones actuales:\n- Promoción 1\n- Promoción 2\n...'
-      );
-      break;
-
-    default:
-      // Mensaje de opciones
-      await message.client.sendMessage(
-        message.from,
-        `*Bienvenidos a LUZARA* 🤖\n\n` +
-        `1️⃣ Opción 1: Información sobre nuestros servicios.\n` +
-        `2️⃣ Opción 2: Contactar con vendedores.\n` +
-        `3️⃣ Opción 3: Ver nuestras promociones.\n\n` +
-        `Por favor, responde con el número de la opción que deseas.`
-      );
-      break;
+  // Obtener mensajes recibidos
+  async getReceivedMessages() {
+    return this.receivedMessages;
   }
+
+  // Verificar si un usuario está autorizado
+  async isUserAuthorized(userNumber) {
+    const allowedPhones = await whitePhoneService.getAllPhoneNumbers();
+    const normalizedUserNumber = userNumber.toString().replace(/^0+/, ''); // Remove leading zeros
+    return allowedPhones.some(phone => phone.toString().replace(/^0+/, '') === normalizedUserNumber); 
+  }
+
+  // Determinar si se debe enviar el menú
+  async shouldSendMenu(userId) {
+    const lastTimestamp = this.lastActivity.get(userId) || 0;
+    return Date.now() - lastTimestamp > 300000;
+  }
+
+  // Enviar el menú al usuario
+  async sendMenu(message) {
+    await this.client.sendMessage(
+      message.from,
+      `*Bienvenido al asistente de Luzara*\n\n` +
+      `1️⃣: Sector administrativo.\n` +
+      `2️⃣: Salidas estudiantiles.\n` +
+      `3️⃣: Salidas grupales.\n\n` +
+      `Por favor, responde con el número de la opción que deseas.`
+    );
+  }
+
+  // Manejar respuesta del usuario
+  async handleUserResponse(message) {
+    const responses = {
+        '1': '✅ Información sobre nuestros servicios: ...',
+        '2': async () => {
+            let salesMan = await getNextSalesman();
+            await this.client.sendMessage(message.from, `‍ Agente: ${salesMan.name}\n ${salesMan.phone}`);
+            await this.client.sendMessage(message.from, salesMan.whatsappUrl);
+        },
+        '3': async () => {
+            await this.client.sendMessage(
+                message.from,
+                `*Menú de Promociones*\n\n` +
+                `1️⃣: Salida 1\n` +
+                `2️⃣: Salida 2\n` +
+                `3️⃣: Salida 3\n\n` +
+                `3️⃣: Salida 4\n\n` +
+                `3️⃣: Salida 5\n\n` +
+                `3️⃣: Volver al menú principal\n\n` +
+
+                `Por favor, responde con el número de la opción que deseas.`
+            );
+        },
+    };
+
+    const response = responses[message.body];
+    if (response) {
+        if (typeof response === 'function') {
+            await response();
+        } else {
+            await this.client.sendMessage(message.from, response);
+        }
+    } else {
+        // Manejar respuestas específicas dentro del menú de promociones
+        if (message.body === '3:1') {
+          console.log('1');
+        } else if (message.body === '3:2') {
+          console.log('2');
+        } else {
+            await this.sendMenu(message); // Volver al menú principal
+        }
+    }
 }
 
-// Unauthorized response
-async function sendUnauthorizedMessage(message) {
-  await message.client.sendMessage(
-    message.from,
-    '...'
-  );
+async sendPromotionDetails(message, promotionId) {
+    // Lógica para obtener los detalles de la promoción según el ID
+    const promotion = await getPromotionDetails(promotionId); // Suponiendo una función para obtener detalles
+
+    await this.client.sendMessage(message.from, `Detalles de la promoción ${promotionId}:\n${promotion.description}`);
 }
 
-// Send image
-async function sendImage(chatId, itemId) {
-  try {
-    const menuItem = await MenuItem.findById(itemId);
-    const imagePath = menuItem.imagePath;
+  // Enviar mensaje de usuario no autorizado
+  async sendUnauthorizedMessage(message) {
+    // await this.client.sendMessage(message.from, '⛔ No estás autorizado para usar este servicio.');
+  }
 
-    // Si la imagen está almacenada en un servicio de almacenamiento en la nube,
-    // obtendrás la URL pública de la imagen en lugar de la ruta local
-
-    const attachment = await MessageMedia.fromFilePath(imagePath);
-    await this.client.sendMessage(chatId, attachment);
-  } catch (error) {
-    console.error('Error al enviar la imagen:', error);
-    throw error;
+  // Enviar imagen
+  async sendImage(chatId, itemId) {
+    try {
+      const menuItem = await MenuItem.findById(itemId);
+      const imagePath = menuItem.imagePath;
+      const attachment = await MessageMedia.fromFilePath(imagePath);
+      await this.client.sendMessage(chatId, attachment);
+    } catch (error) {
+      console.error('❌ Error al enviar la imagen:', error);
+      throw error;
+    }
+  }
+  async sendImageFromUrl(chatId, imageUrl) {
+    try {
+      const response = await fetch(imageUrl);
+      const buffer = await response.buffer();
+      const attachment = await MessageMedia.fromBuffer(buffer, 'image/jpeg');
+      await this.client.sendMessage(chatId, attachment);
+    } catch (error) {
+      console.error('❌ Error al enviar la imagen desde URL:', error);
+      throw error;
+    }
   }
 }
 

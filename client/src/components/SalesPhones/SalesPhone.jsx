@@ -60,9 +60,9 @@ function SalesPhone() {
       </div>
 
       <div className="md:w-full lg:w-1/2 p-4 overflow-x-auto mt-5 mb-11">
-        <table className="table table-zebra">
+        <table className="table table-zebra ubuntu-light-italic">
           <thead>
-            <tr>
+            <tr className="ubuntu-medium">
               <th>Nombre</th>
               <th>Número</th>
               <th>Whatsapp URL</th>

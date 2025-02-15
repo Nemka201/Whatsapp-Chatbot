@@ -12,12 +12,12 @@ const menuItemSchema = new mongoose.Schema({
   },
   commandType: {
     type: String,
-    enum: ['Text message', 'Menu'],
-    default: 'Text message'
+    enum: ['Opcion', 'Menu'],
+    default: 'Opcion'
   },
   images: [{
-    imagePath: { type: String, required: true }, // Ruta o ID de la imagen
-    description: String // Descripción opcional de la imagen
+    imagePath: { type: String, required: true },
+    description: String
   }],
   messageText: String,
   subMenuItems: [

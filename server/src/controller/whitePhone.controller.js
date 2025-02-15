@@ -59,7 +59,7 @@ const updateWhitePhone = async (req, res) => {
   try {
     const { phone, name } = req.body;
     const fieldsToUpdate = Object.entries({ name, phone });
-    const updatedWhitePhone = await WhitePhoneService.updateWhitePhone(req.params.id, ...fieldsToUpdate);
+    const updatedWhitePhone = await whitePhoneService.updateWhitePhone(req.params.id, ...fieldsToUpdate);
     if (!updatedWhitePhone) {
       return res.status(404).json({ message: 'White phone not found' });
     }

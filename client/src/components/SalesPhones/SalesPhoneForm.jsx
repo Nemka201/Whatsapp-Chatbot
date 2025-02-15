@@ -21,7 +21,7 @@ const WhitePhoneForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset, // Importar reset aquí
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -31,13 +31,9 @@ const WhitePhoneForm = () => {
     setIsLoading(true);
     try {
       const response = await SalesPhoneService.addSalesPhone(data);
-      console.log('Teléfono agregado:', response); 
-      // Limpiar el formulario después de un envío exitoso
       reset(); 
-      // Puedes agregar aquí una lógica para mostrar un mensaje de éxito al usuario
     } catch (error) {
       console.error('Error agregando el teléfono:', error);
-      // Puedes mostrar un mensaje de error al usuario
     } finally {
       setIsLoading(false);
     }
@@ -45,9 +41,9 @@ const WhitePhoneForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-5/6 mx-auto shadow-xl p-12">
-      <h2 className="text-center text-2xl">Agregar Nuevo</h2>
+      <h2 className="text-center text-2xl ubuntu-medium">Agregar Nuevo</h2>
       <div className="my-4">
-        <label htmlFor="number" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="number" className="block text-md ubuntu-light text-gray-700">
           Teléfono:
         </label>
         <input
@@ -59,12 +55,12 @@ const WhitePhoneForm = () => {
           }`}
         />
         {errors.number && (
-          <span className="text-red-500 text-sm">{errors.number.message}</span>
+          <span className="text-red-500 text-md">{errors.number.message}</span>
         )}
       </div>
 
       <div className="mb-4">
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="name" className="block text-md ubuntu-light text-gray-700">
           Nombre:
         </label>
         <input
@@ -76,12 +72,12 @@ const WhitePhoneForm = () => {
           }`}
         />
         {errors.name && (
-          <span className="text-red-500 text-sm">{errors.name.message}</span>
+          <span className="text-red-500 text-md">{errors.name.message}</span>
         )}
       </div>
 
       <div className="mb-4">
-        <label htmlFor="whatsappUrl" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="whatsappUrl" className="block text-md ubuntu-light text-gray-700">
           URL de WhatsApp:
         </label>
         <input
@@ -93,14 +89,14 @@ const WhitePhoneForm = () => {
           }`}
         />
         {errors.whatsappUrl && (
-          <span className="text-red-500 text-sm">{errors.whatsappUrl.message}</span>
+          <span className="text-red-500 text-md">{errors.whatsappUrl.message}</span>
         )}
       </div>
 
       <button
         type="submit"
         disabled={isLoading}
-        className="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
+        className="bg-blue-800 hover:bg-blue-900 ubuntu-bold text-white py-2 px-4 rounded"
       >
         Guardar
       </button>

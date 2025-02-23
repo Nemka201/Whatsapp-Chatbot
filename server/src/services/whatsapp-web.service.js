@@ -4,6 +4,7 @@ const qrcode64 = require('qrcode');
 const fs = require('fs');
 const whitePhoneService = require('../services/whitePhone.service');
 const menuItemService = require('../services/menuItem.service');
+const tripItemService = require('../services/tripItem.service');
 const { getNextSalesman } = require('../utilities/getSalesman');
 
 class WhatsAppWebService {
@@ -21,7 +22,7 @@ class WhatsAppWebService {
       }),
     });
 
-    this.lastActivity = new Map(); 
+    this.lastActivity = new Map();
     if (fs.existsSync('whatsapp-session')) {
       console.log('✅ Carpeta de sesión encontrada');
     } else {
@@ -42,7 +43,6 @@ class WhatsAppWebService {
         }
         this.qrCode = url;
       });
-      qrcode.generate(qr, { small: true });
     });
 
     this.client.on('ready', () => {
@@ -82,9 +82,9 @@ class WhatsAppWebService {
         return;
       }
 
-      this.lastActivity.set(message.from, Date.now()); 
+      this.lastActivity.set(message.from, Date.now());
       const userNumber = message.from.split('@')[0];
-      const canMessage = await  this.isUserAuthorized(userNumber);
+      const canMessage = await this.isUserAuthorized(userNumber);
       if (canMessage) {
         if (await this.shouldSendMenu(message.from)) {
           await this.sendMenu(message);
@@ -138,7 +138,7 @@ class WhatsAppWebService {
   async isUserAuthorized(userNumber) {
     const allowedPhones = await whitePhoneService.getAllPhoneNumbers();
     const normalizedUserNumber = userNumber.toString().replace(/^0+/, ''); // Remove leading zeros
-    return allowedPhones.some(phone => phone.toString().replace(/^0+/, '') === normalizedUserNumber); 
+    return allowedPhones.some(phone => phone.toString().replace(/^0+/, '') === normalizedUserNumber);
   }
 
   // Determinar si se debe enviar el menú
@@ -159,56 +159,65 @@ class WhatsAppWebService {
     );
   }
 
-  // Manejar respuesta del usuario
-  async handleUserResponse(message) {
-    const responses = {
-        '1': '✅ Información sobre nuestros servicios: ...',
-        '2': async () => {
-            let salesMan = await getNextSalesman();
-            await this.client.sendMessage(message.from, `‍ Agente: ${salesMan.name}\n ${salesMan.phone}`);
-            await this.client.sendMessage(message.from, salesMan.whatsappUrl);
-        },
-        '3': async () => {
-            await this.client.sendMessage(
-                message.from,
-                `*Menú de Promociones*\n\n` +
-                `1️⃣: Salida 1\n` +
-                `2️⃣: Salida 2\n` +
-                `3️⃣: Salida 3\n\n` +
-                `3️⃣: Salida 4\n\n` +
-                `3️⃣: Salida 5\n\n` +
-                `3️⃣: Volver al menú principal\n\n` +
+  async handleGroupTripsSubMenu(message) {
+    try {
+        const groupTripsMenu = await tripItemService.getAllMenuItems();
 
-                `Por favor, responde con el número de la opción que deseas.`
-            );
-        },
-    };
+        if (!groupTripsMenu || groupTripsMenu.length === 0) {
+            await this.client.sendMessage(message.from, "⚠️ No hay opciones disponibles en este momento.");
+            return;
+        }
 
-    const response = responses[message.body];
-    if (response) {
-        if (typeof response === 'function') {
-            await response();
+        let menuText = `*Menú de Salidas Grupales*\n\n`;
+        let subMenuResponses = {};
+
+        groupTripsMenu.forEach((item, index) => {
+            // Formatear las fechas
+            const departureDate = item.departureDate.toLocaleDateString('es-ES');
+            const returnDate = item.returnDate.toLocaleDateString('es-ES');
+
+            menuText += `${index + 1}️⃣: ${item.messageText}\n`;
+            menuText += `   ️ Salida: ${departureDate} - Vuelta: ${returnDate}\n`;
+            menuText += `   ⏳ ${item.days} días / ${item.nights} noches\n`;
+            menuText += `    Precio: ${item.price} $\n\n`;
+
+            subMenuResponses[(index + 1).toString()] = async () => {
+                // Mostrar detalles del viaje
+                const detailsText = `*${item.messageText}*\n\n`;
+                detailsText += `️ Salida: ${departureDate} - Vuelta: ${returnDate}\n`;
+                detailsText += `⏳ ${item.days} días / ${item.nights} noches\n`;
+                detailsText += ` Precio: ${item.price} $\n\n`;
+                // Aquí puedes agregar más detalles si lo deseas
+                await this.client.sendMessage(message.from, detailsText);
+            };
+        });
+
+        menuText += `0️⃣: Volver al menú principal \n\n`;
+        menuText += `Por favor, responde con el número de la opción que deseas.`;
+
+        subMenuResponses["0"] = async () => {
+            await this.sendMenu(message);
+        };
+
+        await this.client.sendMessage(message.from, menuText);
+
+        if (subMenuResponses[message.body]) {
+            await subMenuResponses[message.body]();
         } else {
-            await this.client.sendMessage(message.from, response);
+            await this.sendGroupTripsMenu(message);
         }
-    } else {
-        // Manejar respuestas específicas dentro del menú de promociones
-        if (message.body === '3:1') {
-          console.log('1');
-        } else if (message.body === '3:2') {
-          console.log('2');
-        } else {
-            await this.sendMenu(message); // Volver al menú principal
-        }
+    } catch (error) {
+        console.error("❌ Error al obtener el submenú:", error);
+        await this.client.sendMessage(message.from, "⚠️ Ocurrió un error al cargar las opciones. Intenta de nuevo más tarde.");
     }
 }
 
-async sendPromotionDetails(message, promotionId) {
-    // Lógica para obtener los detalles de la promoción según el ID
-    const promotion = await getPromotionDetails(promotionId); // Suponiendo una función para obtener detalles
+  // async sendPromotionDetails(message, promotionId) {
+  //     // Lógica para obtener los detalles de la promoción según el ID
+  //     const promotion = await getPromotionDetails(promotionId); // Suponiendo una función para obtener detalles
 
-    await this.client.sendMessage(message.from, `Detalles de la promoción ${promotionId}:\n${promotion.description}`);
-}
+  //     await this.client.sendMessage(message.from, `Detalles de la promoción ${promotionId}:\n${promotion.description}`);
+  // }
 
   // Enviar mensaje de usuario no autorizado
   async sendUnauthorizedMessage(message) {

@@ -1,33 +1,29 @@
-const cloudinary = require('cloudinary').v2;
-require('dotenv').config();
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
 async function uploadImageToCloudinary(file) {
-    try {
-        const result = await cloudinary.uploader.upload(file, {
-            folder: process.env.CLOUDINARY_FOLDER
-        });
-        return result.secure_url;
-    } catch (error) {
-        console.error('Error al subir la imagen a Cloudinary:', error);
-        throw error;
-    }
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch("http://localhost:3000/api/cloudinary/upload", {
+        method: "POST",
+        body: formData,
+    });
+
+    const data = await response.json();
+    return data.url; // URL de la imagen en Cloudinary
+}
+async function deleteImageFromCloudinary(imageUrl) {
+    const publicId = imageUrl.split("/").pop().split(".")[0];
+    const response = await fetch("http://localhost:3000/api/cloudinary/delete", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ public_id: publicId }),
+    });
+
+    const data = await response.json();
+    return data;
 }
 
-async function deleteImageFromCloudinary(imageUrl) {
-    try {
-        const public_id = imageUrl.split('/').slice(-1)[0]; // Extraer el public_id de la URL
-        await cloudinary.uploader.destroy(public_id);
-    } catch (error) {
-        console.error('Error al eliminar la imagen de Cloudinary:', error);
-        throw error;
-    }
-}
 module.exports = {
     uploadImageToCloudinary,
     deleteImageFromCloudinary

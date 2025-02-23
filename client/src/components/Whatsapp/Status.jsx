@@ -25,7 +25,7 @@ function Status() {
     }, []);
 
     return (
-        <div className="bg-base-200 py-4 pt-14 shadow-sm md:px-10 lg:px-20">
+        <div className="bg-base-200 py-4 pt-14 shadow-sm md:px-10 lg:px-20 pb-16s">
             {qrCode ? (
                 <>
                     <h2 className='text-center ubuntu-medium text-2xl'>Inicie sesión</h2>

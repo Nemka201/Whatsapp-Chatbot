@@ -1,14 +1,16 @@
 import Responses from "./Responses";
 import Messages from "./Messages";
 import Status from "./Status";
+import Trips from "./Trips";
 
-function WhatsApp(){
+function WhatsApp() {
     return (
-        <div className="lg:flex">
-            <Status/>
-            <Responses/>
+        <>
+            <Status />
+            <Responses />
+            <Trips />
             {/* <Messages/> */}
-        </div>
+        </>
     )
 }
 export default WhatsApp;

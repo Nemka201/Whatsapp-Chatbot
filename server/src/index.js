@@ -15,9 +15,11 @@ const bodyParser = require('body-parser');
 const salesPhonesRoutes = require('./routes/salesPhone.route');
 const userRoutes = require('./routes/user.route');
 const menuItemRoutes = require('./routes/menuItem.route');
+const tripItemRoutes = require('./routes/tripItem.route');
 const whitePhoneRoutes = require('./routes/whitePhone.route');
 const auth = require('./routes/auth.route');
 const whatsappwebRoutes = require('./routes/whatsapp-web.route');
+const cloudinaryController = require('./controller/cloudinary.controller');
 
 // Middlewares
 app.use(cors());
@@ -30,7 +32,9 @@ app.use('/api/whatsapp-web', whatsappwebRoutes);
 app.use('/api/salesman', salesPhonesRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/menu-items', menuItemRoutes);
+app.use('/api/trip-items', tripItemRoutes);
 app.use('/api/white-phones', whitePhoneRoutes);
+app.use("/api/cloudinary", cloudinaryController);
 
 // Hanlder errors
 app.use((err, req, res, next) => {

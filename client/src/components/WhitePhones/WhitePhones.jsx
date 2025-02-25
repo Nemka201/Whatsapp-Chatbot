@@ -84,7 +84,7 @@ function WhitePhone() {
                       } 
                     />
                   ) : (
-                    WhitePhone.name
+                    whitePhone.name
                   )}
                 </td>
                 <td>

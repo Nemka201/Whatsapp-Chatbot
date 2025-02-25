@@ -30,6 +30,7 @@ async function getNextSalesman() {
     }
 
     console.log('Vendedor asignado:', nextSalesman);
+    console.log('URL del vendedor:', nextSalesman.whatsappUrl);
     return nextSalesman; // Retornar el vendedor seleccionado
   } catch (error) {
     console.error('Error al obtener el siguiente vendedor:', error);

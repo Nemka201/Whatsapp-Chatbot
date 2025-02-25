@@ -53,6 +53,7 @@ const deleteSalesPhone = async (req, res) => {
 const updateSalesPhone = async (req, res) => {
   try {
     const { phone, name, whatsappUrl } = req.body;
+    console.log(req.body);
     const fieldsToUpdate = Object.entries({ name, whatsappUrl, phone });
     const updatedSalesPhone = await SalesPhoneService.updateSalesPhone(req.params.id, ...fieldsToUpdate);
     if (!updatedSalesPhone) {

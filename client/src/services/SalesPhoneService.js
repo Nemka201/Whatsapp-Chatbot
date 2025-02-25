@@ -40,9 +40,9 @@ const SalesPhoneService = {
     }
   },
 
-  updateSalesPhone: async (id, phone, name) => {
+  updateSalesPhone: async (id, phone, name, whatsappUrl) => {
     try {
-      const response = await api.put(`salesman/${id}`, { phone, name });
+      const response = await api.put(`salesman/${id}`, { phone, name, whatsappUrl });
       return response.data;
     } catch (error) {
       console.error('Error updating sales phone:', error);

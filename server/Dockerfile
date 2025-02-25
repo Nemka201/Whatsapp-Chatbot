@@ -21,8 +21,14 @@ COPY package*.json ./
 RUN npm install --production
 COPY . .
 
+# Crear el directorio de sesión y cambiar los permisos
+RUN mkdir -p /whatsapp-session && chown -R node:node /whatsapp-session && chmod -R 755 /whatsapp-session
+
 # Expose the app port
 EXPOSE 3000
+
+# User node for security
+# USER node
 
 # Start the application
 CMD ["node", "src/index.js"]

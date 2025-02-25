@@ -4,7 +4,7 @@ services:
     ports:
       - "3000:3000"
     # volumes:
-    #   - ./whatsapp-session:/app/whatsapp-session
+    #   - ./whatsapp-session:/whatsapp-session
     environment:
       - NODE_ENV=production
       - PORT=3000

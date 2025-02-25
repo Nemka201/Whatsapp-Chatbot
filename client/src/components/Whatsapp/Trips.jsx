@@ -92,8 +92,8 @@ function Trips() {
 };
 
   return (
-    <div className="p-4 overflow-x-aut shadow-sm mt-2 bg-base-200 py-12">
-      <h2 className="text-center ubuntu-medium text-3xl my-4">Viajes Luzara</h2>
+    <div className="p-4 overflow-x-aut shadow-sm mt-2 py-4">
+      <h2 className="ubuntu-medium text-3xl my-8">Viajes Luzara</h2>
       <table className="table table-zebra ubuntu-light sm:text-sm">
         <thead>
           <tr className='ubuntu-medium'>

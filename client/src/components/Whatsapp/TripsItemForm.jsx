@@ -93,7 +93,7 @@ function TripItemForm() {
 
     return (
         <>
-            <button className="btn btn-primary btn-ghost" onClick={handleModalOpen}>Agregar respuesta</button>
+            <button className="btn btn-primary btn-ghost" onClick={handleModalOpen}>Agregar viajes</button>
             {isModalOpen && (
                 <dialog id="my_modal_4" className="modal" open>
                     <div className="modal-box w-1/2 max-w-5xl">

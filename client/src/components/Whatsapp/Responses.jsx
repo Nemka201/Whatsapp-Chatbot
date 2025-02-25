@@ -137,7 +137,7 @@ function MenuItemList() {
 
   return (
     <div className="md:grid-cols-6 lg:grid-cols-6 p-4 overflow-x-aut shadow-sm mt-2 py-8">
-      <h2 className="text-center ubuntu-medium text-3xl mb-4">Respuestas Chatbot</h2>
+      <h3 className="ubuntu-medium text-3xl mb-4">Respuestas Chatbot</h3>
       <table className="table table-zebra ubuntu-light sm:text-sm">
         <thead>
           <tr>

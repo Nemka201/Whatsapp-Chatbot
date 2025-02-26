@@ -20,6 +20,8 @@ services:
     depends_on:
       - server
     restart: always
+    environment:
+      - REACT_APP_API_URL=http://server:3000/api
     networks:
       - chatbot-network  # Agregar a la red
 

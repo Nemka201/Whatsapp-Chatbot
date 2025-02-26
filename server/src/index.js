@@ -22,7 +22,13 @@ const whatsappwebRoutes = require('./routes/whatsapp-web.route');
 const cloudinaryController = require('./controller/cloudinary.controller');
 
 // Middlewares
-app.use(cors());
+// app.use(cors());
+
+app.use(cors({
+    origin: 'http://149.50.148.138', // Reemplaza con la URL de tu frontend
+    credentials: true,
+}));
+
 app.use(bodyParser.json());
 app.use('/api/auth', auth);
 

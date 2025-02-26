@@ -3,29 +3,36 @@ services:
     build: ./server
     ports:
       - "3000:3000"
-    # volumes:
-    #   - ./whatsapp-session:/whatsapp-session
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGO_URI=mongodb://db:27017/mydatabase # Match the 'db' service name
+      - MONGO_URI=mongodb://db:27017/mydatabase
     depends_on:
-      - db # Ensures the database starts before the web service
-    restart: always # Restarts the container if it fails
+      - db
+    restart: always
+    networks:
+      - chatbot-network  # Agregar a la red
 
   client:
     build: ./client
     ports:
       - "80:80"
     depends_on:
-      - server # Ensures the client starts after the server service
+      - server
     restart: always
+    networks:
+      - chatbot-network  # Agregar a la red
 
   db:
     image: mongo
-    container_name: mongodb # Optional: Name the container for clarity
+    container_name: mongodb
     ports:
-      - "27017:27017" # Expose the MongoDB port if needed externally
+      - "27017:27017"
     volumes:
-      - ./data/db:/data/db # Persist MongoDB data locally
+      - ./data/db:/data/db
     restart: always
+    networks:
+      - chatbot-network  # Agregar a la red
+
+networks:
+  chatbot-network:  # Definir la red

@@ -11,19 +11,17 @@ services:
       - db
     restart: always
     networks:
-      - chatbot-network  # Agregar a la red
+      - chatbot-network
 
   client:
     build: ./client
-    ports:
-      - "80:80"
     depends_on:
       - server
     restart: always
     environment:
       - REACT_APP_API_URL=http://server:3000/api
     networks:
-      - chatbot-network  # Agregar a la red
+      - chatbot-network
 
   db:
     image: mongo
@@ -34,7 +32,7 @@ services:
       - ./data/db:/data/db
     restart: always
     networks:
-      - chatbot-network  # Agregar a la red
+      - chatbot-network
 
 networks:
-  chatbot-network:  # Definir la red
+  chatbot-network:

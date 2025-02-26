@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 # Comando para cargar las variables de entorno
-RUN echo "Creating .env file" && touch .env && echo "$CLOUDINARY_CLOUD_NAME" >> .env && echo "$CLOUDINARY_API_KEY" >> .env && echo "$CLOUDINARY_API_SECRET" >> .env && echo "$CLOUDINARY_FOLDER" >> .env
+# RUN echo "Creating .env file" && touch .env && echo "$CLOUDINARY_CLOUD_NAME" >> .env && echo "$CLOUDINARY_API_KEY" >> .env && echo "$CLOUDINARY_API_SECRET" >> .env && echo "$CLOUDINARY_FOLDER" >> .env
 
 # Etapa 2: Servir los archivos estáticos con nginx
 FROM nginx:stable-alpine

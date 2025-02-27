@@ -4,11 +4,14 @@ const handleError = (error) => {
   console.error('Error in user service:', error);
 };
 
+const apiPath = 'users/';
+
+
 // User service functions
 const UserService = {
   createUser: async (userData) => {
     try {
-      const response = await api.post('/users/register', userData);
+      const response = await api.post(apiPath + 'register', userData);
       return response.data;
     } catch (error) {
       handleError(error);
@@ -18,7 +21,7 @@ const UserService = {
 
   loginUser: async (usuario, contrasena) => {
     try {
-      const response = await api.post('/users/login', { usuario, contrasena });
+      const response = await api.post(apiPath + 'login', { usuario, contrasena });
       return response.data;
     } catch (error) {
       handleError(error);
@@ -28,7 +31,7 @@ const UserService = {
 
   getUserById: async (id) => {
     try {
-      const response = await api.get(`/users/${id}`);
+      const response = await api.get(apiPath + id);
       return response.data;
     } catch (error) {
       handleError(error);
@@ -37,7 +40,7 @@ const UserService = {
   },
   userCount: async () => {
     try {
-        const response = await api.get(`/users/count`);
+        const response = await api.get(apiPath + 'count');
         return response.data.count;
     } catch (error) {
         handleError(error);

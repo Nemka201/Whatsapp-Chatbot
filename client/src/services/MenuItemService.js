@@ -1,6 +1,6 @@
 import api from './InterceptorService';
 
-const apiPath = '/menu-items/';
+const apiPath = 'menu-items/';
 
 const MenuItemService = {
     getAllMenuItems: async () => {

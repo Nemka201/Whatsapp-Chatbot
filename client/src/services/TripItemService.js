@@ -1,6 +1,6 @@
 import api from './InterceptorService';
 
-const apiPath = '/trip-items/';
+const apiPath = 'trip-items/';
 
 const TripItemService = {
     getAllMenuItems: async () => {

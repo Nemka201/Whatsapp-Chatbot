@@ -1,9 +1,11 @@
 import api from './InterceptorService';
 
+const apiPath = 'white-phones/'
+
 const WhitePhoneService = {
   getAllWhitePhones: async () => {
     try {
-      const response = await api.get('/white-phones');
+      const response = await api.get(apiPath);
       return response.data;
     } catch (error) {
       console.error('Error getting all white phones:', error);
@@ -13,7 +15,7 @@ const WhitePhoneService = {
 
   addWhitePhone: async (data) => {
     try {
-      const response = await api.post('/white-phones', data);
+      const response = await api.post(apiPath, data);
       return response.data;
     } catch (error) {
       console.error('Error adding white phone:', error);
@@ -23,7 +25,7 @@ const WhitePhoneService = {
 
   getWhitePhoneById: async (id) => {
     try {
-      const response = await api.get(`/white-phones/${id}`);
+      const response = await api.get(`white-phones/${id}`);
       return response.data;
     } catch (error) {
       console.error('Error getting white phone by ID:', error);
@@ -33,7 +35,7 @@ const WhitePhoneService = {
 
   deleteWhitePhone: async (id) => {
     try {
-      await api.delete(`/white-phones/${id}`);
+      await api.delete(`white-phones/${id}`);
     } catch (error) {
       console.error('Error deleting white phone:', error);
       throw error;
@@ -42,7 +44,7 @@ const WhitePhoneService = {
 
   updateWhitePhone: async (id, number, name) => {
     try {
-      const response = await api.put(`/white-phones/${id}`, { number, name });
+      const response = await api.put(`white-phones/${id}`, { number, name });
       return response.data;
     } catch (error) {
       console.error('Error updating white phone:', error);

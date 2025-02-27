@@ -3,8 +3,8 @@ import axios from 'axios';
 const EXPRESS_PORT = 3000;
 const api = axios.create({
     // baseURL: `http://localhost:${EXPRESS_PORT}/api/`,
-    baseURL: `${window.location.origin}/api/`, // Se ajusta automáticamente según la URL del frontend
-
+    // baseURL: `http://server:${EXPRESS_PORT}/api/`, 
+    baseURL: process.env.REACT_APP_API_URL
 });
 
 api.interceptors.request.use(

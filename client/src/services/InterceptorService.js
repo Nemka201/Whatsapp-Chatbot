@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const URL = process.env.REACT_APP_API_URL 
+// const URL = process.env.REACT_APP_API_URL 
 
 const api = axios.create({
     // baseURL: `http://localhost:${EXPRESS_PORT}/api/`,
     // baseURL: `http://server:${EXPRESS_PORT}/api/`, 
-    baseURL: URL + "server/api/"
+    baseURL: "/server/api/"
 });
 
 api.interceptors.request.use(

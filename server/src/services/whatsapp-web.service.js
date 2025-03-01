@@ -9,6 +9,7 @@ const axios = require('axios');
 
 class WhatsAppWebService {
   constructor() {
+
     const path = '/whatsapp-session';
 
     this.client = new Client({
@@ -136,11 +137,10 @@ class WhatsAppWebService {
     const estudiantilUrl = "";
     switch (userResponse) {
       case '1':
-        await this.client.sendMessage(message.from, '📂 Sector Administrativo. Toca en enlace para ser atendido');
-        await this.client.sendMessage(message.from, adminUrl);
+        await this.client.sendMessage(message.from, `📂 Sector Administrativo. Toca en enlace para ser atendido: ${adminUrl}`);
         break;
       case '2':
-        await this.client.sendMessage(message.from, '📚 Salidas Estudiantiles. Toca en enlace para ser atendido');
+        await this.client.sendMessage(message.from, `📚 Salidas Estudiantiles. Toca en enlace para ser atendido: ${estudiantilUrl}`);
         await this.client.sendMessage(message.from, estudiantilUrl);
         break;
       case '3':
@@ -314,9 +314,8 @@ class WhatsAppWebService {
       if (infoVendedor) {
         await this.client.sendMessage(
           message.from,
-          `Para más consultas puedes contactarte con ${infoVendedor.name} tocando el siguiente enlace.`
+          `Para más consultas puedes contactarte con ${infoVendedor.name} tocando el siguiente enlace: ${infoVendedor.whatsappUrl}`
         );
-        await this.client.sendMessage(message.from, infoVendedor.whastappUrl);
       } else {
         await this.client.sendMessage(message.from, '⚠️ No hay vendedores disponibles en este momento.');
       }

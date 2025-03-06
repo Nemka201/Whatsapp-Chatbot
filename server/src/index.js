@@ -35,7 +35,7 @@ app.use('/api/auth', auth);
 // app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/whatsapp-web', authenticateToken, whatsappwebRoutes);
 app.use('/api/salesman', authenticateToken, salesPhonesRoutes);
-app.use('/api/users', authenticateToken, userRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/menu-items', authenticateToken, menuItemRoutes);
 app.use('/api/trip-items', authenticateToken, tripItemRoutes);
 app.use('/api/white-phones', authenticateToken, whitePhoneRoutes);

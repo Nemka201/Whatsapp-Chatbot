@@ -210,7 +210,7 @@ class WhatsAppWebService {
   async sendMenu(message) {
     await this.client.sendMessage(
       message.from,
-      `*Bienvenido al asistente de Luzara*\n\n` +
+      `*Bienvenido al asistente de Luzara Turismo*\n\n` +
       `1️⃣: Sector administrativo.\n` +
       `2️⃣: Salidas estudiantiles.\n` +
       `3️⃣: Salidas grupales.\n\n` +

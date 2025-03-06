@@ -106,9 +106,15 @@ class WhatsAppWebService {
         return;
       }
 
+      // ✅ Asegurar que el usuario tenga un estado inicial asignado
+      if (!this.userStates.has(message.from)) {
+        this.userStates.set(message.from, 'MAIN_MENU');
+      }
+
       this.lastActivity.set(message.from, Date.now());
       const userNumber = message.from.split('@')[0];
       const canMessage = await this.isUserAuthorized(userNumber);
+
       if (!canMessage) {
         await this.routeUser(message);
       } else {
@@ -119,14 +125,20 @@ class WhatsAppWebService {
     }
   }
 
+
   // Manejar navegación según el estado del usuario
   async routeUser(message) {
-    const userState = this.userStates.get(message.from) || 'MAIN_MENU';
+    const userState = this.userStates.get(message.from);
 
     if (userState === 'GROUP_TRIPS_MENU') {
       await this.handleGroupTripsSubMenu(message);
     } else {
-      await this.handleUserResponse(message);
+      if (message.body.trim() === '0') {
+        this.userStates.set(message.from, 'MAIN_MENU');
+        await this.sendMenu(message); // Enviar menú solo al resetear
+      } else {
+        await this.handleUserResponse(message);
+      }
     }
   }
 

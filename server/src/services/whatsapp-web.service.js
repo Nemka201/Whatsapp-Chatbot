@@ -133,8 +133,8 @@ class WhatsAppWebService {
   // Manejar la respuesta del usuario
   async handleUserResponse(message) {
     const userResponse = message.body.trim();
-    const adminUrl = "";
-    const estudiantilUrl = "";
+    const adminUrl = "https://wa.me/5493816486355";
+    const estudiantilUrl = "https://wa.me/5493816334035";
     switch (userResponse) {
       case '1':
         await this.client.sendMessage(message.from, `📂 Sector Administrativo. Toca en enlace para ser atendido: ${adminUrl}`);
@@ -191,7 +191,7 @@ class WhatsAppWebService {
   async isUserAuthorized(userNumber) {
     const allowedPhones = await whitePhoneService.getAllPhoneNumbers();
     const normalizedUserNumber = userNumber.toString().replace(/^0+/, '');
-    return allowedPhones.some(phone => phone.toString().replace(/^0+/, '') === normalizedUserNumber);
+    return !allowedPhones.some(phone => phone.toString().replace(/^0+/, '') === normalizedUserNumber);
   }
 
   // Enviar el menú al usuario

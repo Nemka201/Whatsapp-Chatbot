@@ -20,10 +20,9 @@ const whitePhoneRoutes = require('./routes/whitePhone.route');
 const auth = require('./routes/auth.route');
 const whatsappwebRoutes = require('./routes/whatsapp-web.route');
 const cloudinaryController = require('./controller/cloudinary.controller');
+const authenticateToken = require('./middelware/auth');
 
 // Middlewares
-// app.use(cors());
-
 app.use(cors({
     origin: 'http://149.50.148.138', // Reemplaza con la URL de tu frontend
     credentials: true,
@@ -34,13 +33,13 @@ app.use('/api/auth', auth);
 
 // Use routes
 // app.use('/api/whatsapp', whatsappRoutes);
-app.use('/api/whatsapp-web', whatsappwebRoutes);
-app.use('/api/salesman', salesPhonesRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/menu-items', menuItemRoutes);
-app.use('/api/trip-items', tripItemRoutes);
-app.use('/api/white-phones', whitePhoneRoutes);
-app.use("/api/cloudinary", cloudinaryController);
+app.use('/api/whatsapp-web', authenticateToken, whatsappwebRoutes);
+app.use('/api/salesman', authenticateToken, salesPhonesRoutes);
+app.use('/api/users', authenticateToken, userRoutes);
+app.use('/api/menu-items', authenticateToken, menuItemRoutes);
+app.use('/api/trip-items', authenticateToken, tripItemRoutes);
+app.use('/api/white-phones', authenticateToken, whitePhoneRoutes);
+app.use("/api/cloudinary", authenticateToken, cloudinaryController);
 
 // Hanlder errors
 app.use((err, req, res, next) => {

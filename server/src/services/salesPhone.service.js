@@ -1,18 +1,17 @@
 const NodeCache = require('node-cache');
 const salesPhone = require('../models/salesPhone.model');
+
 const cache = new NodeCache({ stdTTL: 86400 }); // 24 horas de TTL
 
 class SalesPhoneService {
+    
     static async getAllSalesPhones() {
-        // Verificar si hay datos en el caché
         const cachedPhones = cache.get('allPhones');
-        if (cachedPhones) {
-            return cachedPhones;
-        }
+        if (cachedPhones) return cachedPhones;
 
         try {
             const phones = await salesPhone.find();
-            cache.set('allPhones', phones, 86400); // Almacenar en el caché por 24 horas
+            cache.set('allPhones', phones, 86400);
             return phones;
         } catch (err) {
             console.error(err);
@@ -24,6 +23,12 @@ class SalesPhoneService {
         try {
             const newSalesPhone = new salesPhone({ phone, name, whatsappUrl });
             await newSalesPhone.save();
+
+            // **Actualizar caché**
+            let cachedPhones = cache.get('allPhones') || [];
+            cachedPhones.push(newSalesPhone);
+            cache.set('allPhones', cachedPhones, 86400);
+
             return newSalesPhone;
         } catch (err) {
             console.error(err);
@@ -33,8 +38,7 @@ class SalesPhoneService {
 
     static async getSalesPhoneById(id) {
         try {
-            const item = await salesPhone.findById(id);
-            return item;
+            return await salesPhone.findById(id);
         } catch (err) {
             console.error(err);
             throw err;
@@ -44,36 +48,36 @@ class SalesPhoneService {
     static async deleteSalesPhone(id) {
         try {
             await salesPhone.findByIdAndDelete(id);
+
+            // **Actualizar caché eliminando el elemento**
+            let cachedPhones = cache.get('allPhones') || [];
+            cachedPhones = cachedPhones.filter(phone => phone._id.toString() !== id);
+            cache.set('allPhones', cachedPhones, 86400);
+
         } catch (err) {
             console.error(err);
             throw err;
         }
     }
 
-    static async updateSalesPhone(id, ...fieldsToUpdate) {
+    static async updateSalesPhone(id, updateData) {
         try {
-          const salesPhoneObj = await salesPhone.findById(id);
-          if (!salesPhoneObj) {
-            throw new Error('Sales phone not found');
-          }
-      
-          const updateData = {};
-          fieldsToUpdate.forEach(([key, value]) => {
-            if (value !== undefined) {
-              updateData[key] = value;
-            }
-          });
-      
-          if (Object.keys(updateData).length > 0) {
-            await salesPhoneObj.updateOne(updateData);
-          }
-      
-          return salesPhoneObj;
+            const updatedSalesPhone = await salesPhone.findByIdAndUpdate(id, updateData, { new: true });
+            if (!updatedSalesPhone) throw new Error('Sales phone not found');
+
+            // **Actualizar caché**
+            let cachedPhones = cache.get('allPhones') || [];
+            cachedPhones = cachedPhones.map(phone => 
+                phone._id.toString() === id ? updatedSalesPhone : phone
+            );
+            cache.set('allPhones', cachedPhones, 86400);
+
+            return updatedSalesPhone;
         } catch (err) {
-          console.error(err);
-          throw err;
+            console.error(err);
+            throw err;
         }
-      }
+    }
 }
 
 module.exports = SalesPhoneService;

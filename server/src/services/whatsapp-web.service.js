@@ -109,7 +109,7 @@ class WhatsAppWebService {
       this.lastActivity.set(message.from, Date.now());
       const userNumber = message.from.split('@')[0];
       const canMessage = await this.isUserAuthorized(userNumber);
-      if (canMessage) {
+      if (!canMessage) {
         await this.routeUser(message);
       } else {
         await this.sendUnauthorizedMessage(message);
@@ -137,11 +137,11 @@ class WhatsAppWebService {
     const estudiantilUrl = "https://wa.me/5493816334035";
     switch (userResponse) {
       case '1':
-        await this.client.sendMessage(message.from, `📂 Sector Administrativo. Toca en enlace para ser atendido: ${adminUrl}`);
+        await this.client.sendMessage(message.from, `📂 Sector Administrativo. Toca en enlace para ser atendido: https://wa.me/5493816486355`);
         break;
       case '2':
-        await this.client.sendMessage(message.from, `📚 Salidas Estudiantiles. Toca en enlace para ser atendido: ${estudiantilUrl}`);
-        await this.client.sendMessage(message.from, estudiantilUrl);
+        await this.client.sendMessage(message.from, `📚 Salidas Estudiantiles. Toca en enlace para ser atendido: https://wa.me/5493816334035`);
+        // await this.client.sendMessage(message.from, estudiantilUrl);
         break;
       case '3':
         this.userStates.set(message.from, 'GROUP_TRIPS_MENU');

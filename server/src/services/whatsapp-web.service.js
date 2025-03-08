@@ -146,13 +146,13 @@ class WhatsAppWebService {
   async handleUserResponse(message) {
     const userResponse = message.body.trim();
     const adminUrl = "https://wa.me/5493816486355";
-    const estudiantilUrl = "https://wa.me/5493816334035";
+    const estudiantilUrl = "https://wa.me/5493816634035";
     switch (userResponse) {
       case '1':
-        await this.client.sendMessage(message.from, `📂 Sector Administrativo. Toca en enlace para ser atendido: https://wa.me/5493816486355`);
+        await this.client.sendMessage(message.from, `📂 Sector Administrativo: https://wa.me/5493816486355`);
         break;
       case '2':
-        await this.client.sendMessage(message.from, `📚 Salidas Estudiantiles. Toca en enlace para ser atendido: https://wa.me/5493816334035`);
+        await this.client.sendMessage(message.from, `📚 Salidas Estudiantiles: https://wa.me/5493816334035`);
         // await this.client.sendMessage(message.from, estudiantilUrl);
         break;
       case '3':

@@ -91,40 +91,40 @@ class WhatsAppWebService {
 
   // Manejar mensajes entrantes
   async handleIncomingMessage(message) {
-    try {
-      console.log('📩 Mensaje recibido:', message.body);
+    if (this.receivedMessages.some(m => m.id === message.id._serialized)) {
+      console.log('⚠️ Mensaje duplicado detectado, ignorando...');
+      return;
+    }
 
-      this.receivedMessages.push({
-        id: message.id._serialized,
-        from: message.from,
-        body: message.body,
-        timestamp: message.timestamp,
-      });
+    this.receivedMessages.push({
+      id: message.id._serialized,
+      from: message.from,
+      body: message.body,
+      timestamp: message.timestamp,
+    });
 
-      if (message.isGroup) {
-        console.log('🔕 Mensaje de grupo ignorado');
-        return;
-      }
+    console.log('📩 Mensaje recibido:', message.body);
 
-      // ✅ Asegurar que el usuario tenga un estado inicial asignado
-      if (!this.userStates.has(message.from)) {
-        this.userStates.set(message.from, 'MAIN_MENU');
-      }
+    if (message.isGroup) {
+      console.log('🔕 Mensaje de grupo ignorado');
+      return;
+    }
 
-      this.lastActivity.set(message.from, Date.now());
-      const userNumber = message.from.split('@')[0];
-      const canMessage = await this.isUserAuthorized(userNumber);
+    if (!this.userStates.has(message.from)) {
+      this.userStates.set(message.from, 'MAIN_MENU');
+      await this.sendMenu(message);
+    }
 
-      if (!canMessage) {
-        await this.routeUser(message);
-      } else {
-        await this.sendUnauthorizedMessage(message);
-      }
-    } catch (error) {
-      console.error('❌ Error procesando mensaje:', error);
+    this.lastActivity.set(message.from, Date.now());
+    const userNumber = message.from.split('@')[0];
+    const canMessage = await this.isUserAuthorized(userNumber);
+
+    if (!canMessage) {
+      await this.routeUser(message);
+    } else {
+      await this.sendUnauthorizedMessage(message);
     }
   }
-
 
   // Manejar navegación según el estado del usuario
   async routeUser(message) {
@@ -146,21 +146,19 @@ class WhatsAppWebService {
   async handleUserResponse(message) {
     const userResponse = message.body.trim();
     const adminUrl = "https://wa.me/5493816486355";
-    const estudiantilUrl = "https://wa.me/5493816634035";
+    const estudiantilUrl = "https://wa.me/5493816334035";
     switch (userResponse) {
       case '1':
-        await this.client.sendMessage(message.from, `📂 Sector Administrativo: https://wa.me/5493816486355`);
+        await this.client.sendMessage(message.from, `📂 Sector Administrativo. Toca en enlace para ser atendido: ${adminUrl}`);
         break;
       case '2':
-        await this.client.sendMessage(message.from, `📚 Salidas Estudiantiles: https://wa.me/5493816334035`);
-        // await this.client.sendMessage(message.from, estudiantilUrl);
+        await this.client.sendMessage(message.from, `📚 Salidas Estudiantiles. Toca en enlace para ser atendido: ${estudiantilUrl}`);
         break;
       case '3':
         this.userStates.set(message.from, 'GROUP_TRIPS_MENU');
         await this.handleGroupTripsSubMenu(message);
         break;
       default:
-        // await this.client.sendMessage(message.from, '⚠️ Opción no válida. Por favor, selecciona una opción del menú.');
         await this.sendMenu(message);
     }
   }
@@ -208,15 +206,19 @@ class WhatsAppWebService {
 
   // Enviar el menú al usuario
   async sendMenu(message) {
+    if (this.userStates.get(message.from) === 'SENT_MENU') return; // Evita reenviar el menú
+    this.userStates.set(message.from, 'SENT_MENU');
+
     await this.client.sendMessage(
       message.from,
       `*Bienvenido al asistente de Luzara Turismo*\n\n` +
-      `1️⃣: Sector administrativo.\n` +
-      `2️⃣: Salidas estudiantiles.\n` +
-      `3️⃣: Salidas grupales.\n\n` +
+      `1️: Sector administrativo.\n` +
+      `2️: Salidas estudiantiles.\n` +
+      `3️: Salidas grupales.\n\n` +
       `Por favor, responde con el número de la opción que deseas.`
     );
   }
+
 
   // Enviar imagen de menuItem
   async sendImage(chatId, itemId) {

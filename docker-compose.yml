@@ -43,6 +43,7 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
+    command: mongod --journalSizeMB 1024 # Ajusta el tamaño del diario (en MB)
     volumes:
       - ./data/db:/data/db
     restart: always

@@ -133,4 +133,6 @@ Este proyecto se distribuye bajo la licencia MIT. Ver el archivo [LICENSE](./LIC
 
 ---
 
-## 🛠️
+## 🛠️ Autor
+
+Proyecto desarrollado por [Nemka201](https://github.com/Nemka201).
